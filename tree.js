@@ -37,6 +37,8 @@ function draw_three_branch_tree(context, params) {
       draw_tree(point2, branch_length / 2.0, depth - 1, angle);
     }
   }
+  
+  draw_line(params.initial_point, {x: params.initial_point.x, y: params.initial_point.y + params.trunk_length});
 
-  draw_tree(params.initial_point, params.trunk_length, params.max_depth, params.start_angle);
+  draw_tree(params.initial_point, params.trunk_length / 2, params.max_depth, params.start_angle);
 }

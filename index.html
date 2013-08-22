@@ -1,36 +1,97 @@
 <html>
 <head>
-<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+<style type="text/css">
+  .canvas_wrapper {
+    float: left;
+    margin: 0.5em;
+    padding: 0.5em;
+    border: 1px solid black;
+  }
+  
+  .canvas_controls {
+    margin: 0.5em;
+  }
+  
+  .ui-slider {
+    margin-bottom: 0.5em;
+  }
+</style>
+
 <script src="barnsley.js"></script>
 <script src="tree.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function(){
-    var canvas = document.getElementById('barnsley');
-    var context = canvas.getContext('2d');
-    context.fillStyle = '#E8EDE8';
-    context.fillRect(0, 0, 480, 320);
-    context.fillStyle = "#009900";
-    draw_barnsley_fern(context, 30);
+function do_canvas(id, bgcolor, fgcolor, draw_func) {
+  var canvas = document.getElementById(id);
+  var context = canvas.getContext('2d');
+  context.fillStyle = bgcolor;
+  context.fillRect(0, 0, $(canvas).width(), $(canvas).height());
+  context.fillStyle = fgcolor;
+  
+  draw_func(context);
+}
 
-    var canvas = document.getElementById('tree');
-    var context = canvas.getContext('2d');
-    context.fillStyle = '#E8EDE8';
-    context.fillRect(0, 0, 480, 320);
+function barnsley_fern() {
+  var bgcolor = '#E8EDE8';
+  var fgcolor = '#009900';
+  do_canvas('barnsley', bgcolor, fgcolor,
+    function(context) {
+      var scaling_factor = 30;
+      var xoffset = 3;
+      var yoffset = 10;
+      draw_barnsley_fern(context, scaling_factor, xoffset, yoffset);
+    });
+}
+
+function three_branch_tree(branch_angle) {
+  var bgcolor = '#E8EDE8';
+  var fgcolor = '#000000';
+  
+  do_canvas('tree', bgcolor, fgcolor,
+  function(context) {
     var params = {
-      initial_point: {x: 240, y: 280},
-      trunk_length: 130,
+      initial_point: {x: 300, y: 300},
+      trunk_length: 260,
       max_depth: 8,
       start_angle: -90.0,
-      branch_angle: 60.0
+      branch_angle: branch_angle
     }
-
     draw_three_branch_tree(context, params);
+  });
+}
+
+$(document).ready(function(){
+  barnsley_fern();
+ 
+  three_branch_tree(parseInt($('#angle').text()));
+  
+  var slider = $('#slider').slider({
+    min: 0,
+    max: 180,
+    value: $('#angle').text(),
+    slide: function( event, ui ) {
+      $( '#angle' ).text( ui.value );
+      three_branch_tree(parseInt($('#angle').text()));
+    }});
 });
 </script>
 </head>
 <body>
-<canvas id="barnsley" width="480" height="320"></canvas>
-<canvas id="tree" width="480" height="320"></canvas>
+<div class="canvas_wrapper">
+<canvas id="barnsley" width="220" height="320"></canvas>
+</div>
+<div class="canvas_wrapper">
+  <canvas id="tree" width="600" height="600"></canvas>
+  <div class="canvas_controls">
+    <div id="slider" ></div>
+    <span> Branch Angle (degrees): <span id="angle">30</span></span>
+  </div>
+</div>
 </body>
 </html>

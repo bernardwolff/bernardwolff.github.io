@@ -1,4 +1,4 @@
-function draw_barnsley_fern(context, scale) {
+function draw_barnsley_fern(context, scale, xoffset, yoffset) {
   function OnePercent(point) {
     var x = 0;
     var y = 0.16 * point.y;
@@ -38,8 +38,8 @@ function draw_barnsley_fern(context, scale) {
 
     // points are in the range -2.1820 < x < 2.6558 and 0 <= y < 9.9983.
     // after adding 3 to x: 0.818 < x < 5.6558
-    var x = scale * (point.x + 3);
-    var y = (10 * scale) - (scale * point.y);
+    var x = scale * (point.x + xoffset);
+    var y = (10 * scale) - (scale * point.y) + yoffset;
     context.fillRect(x, y, 1, 1);
   }
 }
