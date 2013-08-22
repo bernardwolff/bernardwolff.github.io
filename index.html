@@ -33,6 +33,7 @@ function do_canvas(id, bgcolor, fgcolor, draw_func) {
   context.fillStyle = bgcolor;
   context.fillRect(0, 0, $(canvas).width(), $(canvas).height());
   context.fillStyle = fgcolor;
+  context.strokeStyle = fgcolor;
   
   draw_func(context);
 }
@@ -51,7 +52,7 @@ function barnsley_fern() {
 
 function three_branch_tree(branch_angle) {
   var bgcolor = '#E8EDE8';
-  var fgcolor = '#000000';
+  var fgcolor = '#663300';
   
   do_canvas('tree', bgcolor, fgcolor,
   function(context) {
@@ -78,7 +79,7 @@ $(document).ready(function(){
     slide: function( event, ui ) {
       $( '#angle' ).text( ui.value );
       three_branch_tree(parseInt($('#angle').text()));
-    }});
+  }});
 });
 </script>
 </head>
