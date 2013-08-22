@@ -27,6 +27,11 @@ function draw_three_branch_tree(context, params) {
     }
 
     var angles = [start_angle - params.branch_angle, start_angle, start_angle + params.branch_angle];
+    
+    if (depth == params.max_depth) {
+      angles.shift();
+      angles.pop();
+    }
 
     for (var i = 0; i < angles.length; i++) {
       var angle = angles[i];
@@ -37,9 +42,6 @@ function draw_three_branch_tree(context, params) {
       draw_tree(point2, branch_length / 2, depth - 1, angle);
     }
   }
-  
-  var trunk_base = get_next_point(params.initial_point, params.start_angle + 180, params.trunk_length);
-  draw_line(params.initial_point, trunk_base);
 
   draw_tree(params.initial_point, params.trunk_length / 2, params.max_depth, params.start_angle);
 }
