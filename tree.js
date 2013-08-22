@@ -1,10 +1,6 @@
-function draw_three_branch_tree(context, initial_point, trunk_length, max_depth) {
+function draw_three_branch_tree(context, params) {
   function deg_to_rad(deg) {
     return deg * Math.PI / 180.0;
-  }
-
-  function rad_to_deg(rad) {
-    return rad * 180.0 / Math.PI;
   }
 
   function draw_line(point1, point2) {
@@ -30,8 +26,7 @@ function draw_three_branch_tree(context, initial_point, trunk_length, max_depth)
       return;
     }
 
-    var branch_angle = 60.0;
-    var angles = [start_angle - branch_angle, start_angle, start_angle + branch_angle];
+    var angles = [start_angle - params.branch_angle, start_angle, start_angle + params.branch_angle];
 
     for (var i = 0; i < angles.length; i++) {
       var angle = angles[i];
@@ -39,12 +34,9 @@ function draw_three_branch_tree(context, initial_point, trunk_length, max_depth)
 
       draw_line(point, point2);
 
-      draw_tree(point2, branch_length / (depth / 2.0), depth - 1, angle);
-      
-      //var divisor = max_depth == depth ? depth : max_depth - depth;
-      //draw_tree(point2, branch_length / 3.0 , depth - 1, angle);
+      draw_tree(point2, branch_length / 2.0, depth - 1, angle);
     }
   }
 
-  draw_tree(initial_point, trunk_length * 0.9, max_depth, 90.0);
+  draw_tree(params.initial_point, params.trunk_length, params.max_depth, params.start_angle);
 }
