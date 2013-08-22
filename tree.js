@@ -34,11 +34,12 @@ function draw_three_branch_tree(context, params) {
 
       draw_line(point, point2);
 
-      draw_tree(point2, branch_length / 2.0, depth - 1, angle);
+      draw_tree(point2, branch_length / 2, depth - 1, angle);
     }
   }
   
-  draw_line(params.initial_point, {x: params.initial_point.x, y: params.initial_point.y + params.trunk_length});
+  var trunk_base = get_next_point(params.initial_point, params.start_angle + 180, params.trunk_length);
+  draw_line(params.initial_point, trunk_base);
 
   draw_tree(params.initial_point, params.trunk_length / 2, params.max_depth, params.start_angle);
 }
