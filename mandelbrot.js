@@ -1,10 +1,4 @@
 function draw_mandelbrot(context, params) {
-  function pad(n, width, z) {
-    z = z || '0';
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-  }
-
   var mandelbrot_scale = function () {
     self = this;
     self.x = {min: -2.5, max: 1};
@@ -39,9 +33,8 @@ function draw_mandelbrot(context, params) {
         iteration = iteration + 1;
       }
 
-      var color = Math.floor(params.color_depth * iteration / params.max_iteration);
-
-      context.fillStyle = '#' + pad(color.toString(16), 6);
+      var color = Math.floor(255 * iteration / params.max_iteration);
+      context.fillStyle = 'rgb(' + color + '%, ' + color + '%, ' + color + '%)';
       context.fillRect(i, j, 1, 1);
     }
   }
