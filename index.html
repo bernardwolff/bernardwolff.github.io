@@ -25,6 +25,7 @@
 
 <script src="barnsley.js"></script>
 <script src="tree.js"></script>
+<script src="mandelbrot.js"></script>
 
 <script type="text/javascript">
 function init_canvas(id, bgcolor, fgcolor) {
@@ -39,34 +40,26 @@ function init_canvas(id, bgcolor, fgcolor) {
 }
 
 function barnsley_fern() {
-  var bgcolor = '#E8EDE8';
-  var fgcolor = '#009900';
-  var context = init_canvas('barnsley', bgcolor, fgcolor);
-  var params = {
-    scale: 30,
-    xoffset: 3,
-    yoffset: 10,
-  };
-  draw_barnsley_fern(context, params);
 }
 
 function three_branch_tree(branch_angle) {
-  var bgcolor = '#E8EDE8';
-  var fgcolor = '#663300';
-  
-  var context = init_canvas('tree', bgcolor, fgcolor);
-  var params = {
+  var context = init_canvas('tree', '#E8EDE8', '#663300');
+  draw_three_branch_tree(context, {
     initial_point: {x: 160, y: 290},
     trunk_length: 260,
     max_depth: 8,
     start_angle: -90,
     branch_angle: branch_angle
-  };
-  draw_three_branch_tree(context, params);
+  });
 }
 
 $(document).ready(function(){
-  barnsley_fern();
+  var context = init_canvas('barnsley', '#E8EDE8', '#009900');
+  draw_barnsley_fern(context, {
+    scale: 30,
+    xoffset: 3,
+    yoffset: 10,
+  });
  
   three_branch_tree(parseInt($('#angle').text()));
   
@@ -78,6 +71,9 @@ $(document).ready(function(){
       $( '#angle' ).text( ui.value );
       three_branch_tree(parseInt($('#angle').text()));
   }});
+
+  var context = init_canvas('mandelbrot', '#E8EDE8', '#000000');
+  draw_mandelbrot(context, {color_depth: 16777215, max_iteration: 500});
 });
 </script>
 </head>
@@ -91,6 +87,9 @@ $(document).ready(function(){
     <div id="slider" ></div>
     <span> Branch Angle: <span id="angle">30</span>&deg;</span>
   </div>
+</div>
+<div class="canvas_wrapper">
+  <canvas id="mandelbrot" width="320" height="320"></canvas>
 </div>
 </body>
 </html>
