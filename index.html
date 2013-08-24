@@ -39,9 +39,6 @@ function init_canvas(id, bgcolor, fgcolor) {
   return context;
 }
 
-function barnsley_fern() {
-}
-
 function three_branch_tree(branch_angle) {
   var context = init_canvas('tree', '#E8EDE8', '#663300');
   draw_three_branch_tree(context, {
@@ -73,7 +70,7 @@ $(document).ready(function(){
   }});
 
   var context = init_canvas('mandelbrot', '#E8EDE8', '#000000');
-  draw_mandelbrot(context, {color_depth: 16777215, max_iteration: 500});
+  draw_mandelbrot(context, {color_depth: 16777215.0, max_iteration: 100});
 });
 </script>
 </head>
