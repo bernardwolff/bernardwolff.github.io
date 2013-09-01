@@ -39,33 +39,33 @@ function init_canvas(id, bgcolor, fgcolor) {
   return context;
 }
 
-function three_branch_tree(branch_angle) {
-  var context = init_canvas('tree', '#E8EDE8', '#663300');
-  draw_three_branch_tree(context, {
-    initial_point: {x: 160, y: 290},
-    trunk_length: 260,
-    max_depth: 8,
-    start_angle: -90,
-    branch_angle: branch_angle
-  });
-}
 
 $(document).ready(function(){
-  var context = init_canvas('barnsley', '#E8EDE8', '#009900');
-  draw_barnsley_fern(context, {
+  draw_barnsley_fern(init_canvas('barnsley', '#E8EDE8', '#009900'), {
     scale: 30,
     xoffset: 3,
     yoffset: 10,
   });
  
+  function three_branch_tree(branch_angle) {
+    draw_three_branch_tree(init_canvas('tree', '#E8EDE8', '#663300'),
+      {
+        initial_point: {x: 160, y: 290},
+        trunk_length: 260,
+        max_depth: 8,
+        start_angle: -90,
+        branch_angle: branch_angle
+      });
+  }
+
   three_branch_tree(parseInt($('#angle').text()));
   
   var slider = $('#slider').slider({
     min: 0,
     max: 180,
     value: $('#angle').text(),
-    slide: function( event, ui ) {
-      $( '#angle' ).text( ui.value );
+    slide: function(event, ui) {
+      $('#angle').text(ui.value);
       three_branch_tree(parseInt($('#angle').text()));
   }});
 
