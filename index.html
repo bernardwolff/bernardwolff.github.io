@@ -26,6 +26,7 @@
 <script src="barnsley.js"></script>
 <script src="tree.js"></script>
 <script src="mandelbrot.js"></script>
+<script src="maze.js"></script>
 
 <script type="text/javascript">
 function init_canvas(id, bgcolor, fgcolor) {
@@ -47,9 +48,9 @@ $(document).ready(function(){
     yoffset: 10,
   });
  
-  var context = init_canvas('tree', '#E8EDE8', '#663300');
   function three_branch_tree(branch_angle) {
-    draw_three_branch_tree(context,
+    var tree_context = init_canvas('tree', '#E8EDE8', '#663300');
+    draw_three_branch_tree(tree_context,
       {
         initial_point: {x: 160, y: 290},
         trunk_length: 260,
@@ -72,6 +73,9 @@ $(document).ready(function(){
 
   draw_mandelbrot(init_canvas('mandelbrot', '#E8EDE8', '#000000'),
       {color_depth: 16777215, max_iteration: 100});
+
+  var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
+  draw_maze(maze_context, {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
 });
 </script>
 </head>
@@ -88,6 +92,9 @@ $(document).ready(function(){
 </div>
 <div class="canvas_wrapper">
   <canvas id="mandelbrot" width="320" height="320"></canvas>
+</div>
+<div class="canvas_wrapper">
+  <canvas id="maze" width="320" height="320"></canvas>
 </div>
 </body>
 </html>
