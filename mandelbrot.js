@@ -19,7 +19,7 @@ function draw_mandelbrot(context, params) {
         iteration = iteration + 1;
       }
 
-      var color = Math.floor(255 * iteration / params.max_iteration);
+      var color = 100 - Math.floor(255 * iteration / params.max_iteration);
       context.fillStyle = 'rgb(' + color + '%, ' + color + '%, ' + color + '%)';
       context.fillRect(i, j, 1, 1);
     }

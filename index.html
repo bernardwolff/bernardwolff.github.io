@@ -2,16 +2,19 @@
 <head>
 
 <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/bxslider/4.1/jquery.bxslider.css">
 
 <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="http://cdn.jsdelivr.net/bxslider/4.1/jquery.bxslider.min.js"></script>
+
 
 <style type="text/css">
   .canvas_wrapper {
-    float: left;
-    margin: 0.5em;
+    /*float: left;*/
+    text-align: center;
     padding: 0.5em;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
   }
   
   .canvas_controls {
@@ -20,6 +23,12 @@
   
   .ui-slider {
     margin-bottom: 0.5em;
+  }
+  
+  .wrapper {
+    margin: auto;
+    width: 420px;
+    height: 900px;
   }
 </style>
 
@@ -42,14 +51,14 @@ function init_canvas(id, bgcolor, fgcolor) {
 
 
 $(document).ready(function(){
-  draw_barnsley_fern(init_canvas('barnsley', '#E8EDE8', '#009900'), {
+  draw_barnsley_fern(init_canvas('barnsley', '#FFFFFF', '#009900'), {
     scale: 30,
     xoffset: 3,
     yoffset: 10,
   });
  
   function three_branch_tree(branch_angle) {
-    var tree_context = init_canvas('tree', '#E8EDE8', '#663300');
+    var tree_context = init_canvas('tree', '#FFFFFF', '#663300');
     draw_three_branch_tree(tree_context,
       {
         initial_point: {x: 160, y: 290},
@@ -71,30 +80,52 @@ $(document).ready(function(){
       three_branch_tree(parseInt($('#angle').text()));
   }});
 
-  draw_mandelbrot(init_canvas('mandelbrot', '#E8EDE8', '#000000'),
+  draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
       {color_depth: 16777215, max_iteration: 100});
 
   var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
   draw_maze(maze_context, {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
+  
+  $('.bxslider').bxSlider({onSlideAfter: function(elem, prevIndex, curIndex){
+    var canvas = $(elem["0"]).find("canvas");
+    if (!canvas.attr("loaded")) {
+      // TODO: do the canvas drawing here
+      canvas.attr("loaded", true);
+      var canvas_id = canvas.attr("id");
+      console.log(canvas_id);
+    }
+  }});
 });
 </script>
 </head>
 <body>
-<div class="canvas_wrapper">
-<canvas id="barnsley" width="220" height="320"></canvas>
-</div>
-<div class="canvas_wrapper">
-  <canvas id="tree" width="320" height="320"></canvas>
-  <div class="canvas_controls">
-    <div id="slider" ></div>
-    <span> Branch Angle: <span id="angle">30</span>&deg;</span>
-  </div>
-</div>
-<div class="canvas_wrapper">
-  <canvas id="mandelbrot" width="320" height="320"></canvas>
-</div>
-<div class="canvas_wrapper">
-  <canvas id="maze" width="320" height="320"></canvas>
+<div class="wrapper">
+  <ul class="bxslider">
+    <li>
+      <div class="canvas_wrapper">
+        <canvas id="barnsley" width="220" height="320"></canvas>
+      </div>
+    </li>
+    <li>
+      <div class="canvas_wrapper">
+        <canvas id="tree" width="320" height="320"></canvas>
+        <div class="canvas_controls">
+          <div id="slider" ></div>
+          <span> Branch Angle: <span id="angle">30</span>&deg;</span>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="canvas_wrapper">
+        <canvas id="mandelbrot" width="320" height="320"></canvas>
+      </div>
+    </li>
+    <li>
+      <div class="canvas_wrapper">
+        <canvas id="maze" width="320" height="320"></canvas>
+      </div>
+    </li>
+  </ul>
 </div>
 </body>
 </html>
