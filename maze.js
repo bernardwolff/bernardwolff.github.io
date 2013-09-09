@@ -3,12 +3,12 @@ function draw_maze(context, params) {
     return deg * Math.PI / 180.0;
   }
 
-  function draw_line(point1, point2) {
+  /*function draw_line(point1, point2) {
     context.beginPath();
     context.moveTo(point1.x, point1.y);
     context.lineTo(point2.x, point2.y);
     context.stroke();
-  }
+  }*/
 
   if (context.canvas.width != context.canvas.height) {
     console.log("canvas width and height must be the same for maze drawing");
@@ -22,7 +22,7 @@ function draw_maze(context, params) {
   var grid = {};
   var path = [];
 
-  function fill_all() {
+  /*function fill_all() {
     for (var i = 0; i < maze_width; i++) {
       for (var j = 0; j < maze_width; j++) {
         var x = i * params.cell_size + border_width;
@@ -30,7 +30,7 @@ function draw_maze(context, params) {
         context.fillRect(x, y, grid_size, grid_size);
       }
     }
-  }
+  }*/
 
   function fill_cell(point, color) {
     var x = point.x * params.cell_size + border_width;
