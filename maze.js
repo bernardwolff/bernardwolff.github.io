@@ -1,4 +1,17 @@
 function draw_maze(context, params) {
+  var last = (new Date()).getTime();
+
+  window.requestAnimFrame = (function(callback) {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+  })();
+
   function deg_to_rad(deg) {
     return deg * Math.PI / 180.0;
   }
@@ -18,6 +31,7 @@ function draw_maze(context, params) {
   var grid_size = params.cell_size / 2;
   var border_width = grid_size / 2;
   var maze_width = context.canvas.width / params.cell_size; 
+  var maze_cells = [];
 
   var grid = {};
   var path = [];
@@ -32,10 +46,11 @@ function draw_maze(context, params) {
     }
   }*/
 
-  function fill_cell(point, color) {
+  function add_maze_cell(point) {
     var x = point.x * params.cell_size + border_width;
     var y = point.y * params.cell_size + border_width;
-    context.fillStyle = color;
+    maze_cells.push({'x': x, 'y': y});
+    context.fillStyle = params.cell_color;
     context.fillRect(x, y, grid_size, grid_size);
   }
 
@@ -70,9 +85,23 @@ function draw_maze(context, params) {
   }
 
   var current_point = {x: 0, y: 0};
+  
+  function render() {
+    if (maze_cells.length > 0) {
+      var cur = (new Date()).getTime(); 
+      if (cur - last > 500) {
+        context.fillStyle = params.cell_color;
+        var cell = maze_cells.shift();
+        context.fillRect(cell.x, cell.y, grid_size, grid_size);
+        last = cur;
+      }
+
+      requestAnimFrame(render);
+    }
+  }
 
   function draw_maze_internal(current_point) {
-    fill_cell(current_point, params.cell_color);
+    add_maze_cell(current_point);
 
     mark_visited(current_point);
 
@@ -84,7 +113,7 @@ function draw_maze(context, params) {
       var random_neighbor = neighbors[r];
 
       var wall_cell = {x: (current_point.x + random_neighbor.x) / 2, y: (current_point.y + random_neighbor.y) / 2};
-      fill_cell(wall_cell, params.cell_color);
+      add_maze_cell(wall_cell);
 
       draw_maze_internal(random_neighbor);
 
@@ -93,4 +122,6 @@ function draw_maze(context, params) {
   }
 
   draw_maze_internal(current_point);
+
+  //render();
 }

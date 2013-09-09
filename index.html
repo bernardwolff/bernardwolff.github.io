@@ -49,27 +49,38 @@ function init_canvas(id, bgcolor, fgcolor) {
   return context;
 }
 
+function three_branch_tree(branch_angle) {
+  var tree_context = init_canvas('tree', '#FFFFFF', '#663300');
+  draw_three_branch_tree(tree_context, {
+    initial_point: {x: 160, y: 290},
+    trunk_length: 260,
+    max_depth: 8,
+    start_angle: -90,
+    branch_angle: branch_angle
+  });
+}
+
+var drawing_funcs = {
+  barnsley: function() {
+    draw_barnsley_fern(init_canvas('barnsley', '#FFFFFF', '#009900'), {
+      scale: 30,
+      xoffset: 3,
+      yoffset: 10,
+    });
+  },
+  tree: function() { three_branch_tree(parseInt($('#angle').text())); },
+  mandelbrot: function() {
+    draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
+      {color_depth: 16777215, max_iteration: 100});
+  },
+  maze: function() {
+    var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
+    draw_maze(maze_context,
+      {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
+  }
+};
 
 $(document).ready(function(){
-  draw_barnsley_fern(init_canvas('barnsley', '#FFFFFF', '#009900'), {
-    scale: 30,
-    xoffset: 3,
-    yoffset: 10,
-  });
- 
-  function three_branch_tree(branch_angle) {
-    var tree_context = init_canvas('tree', '#FFFFFF', '#663300');
-    draw_three_branch_tree(tree_context,
-      {
-        initial_point: {x: 160, y: 290},
-        trunk_length: 260,
-        max_depth: 8,
-        start_angle: -90,
-        branch_angle: branch_angle
-      });
-  }
-
-  three_branch_tree(parseInt($('#angle').text()));
   
   var slider = $('#slider').slider({
     min: 0,
@@ -80,21 +91,27 @@ $(document).ready(function(){
       three_branch_tree(parseInt($('#angle').text()));
   }});
 
-  draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
-      {color_depth: 16777215, max_iteration: 100});
-
-  var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
-  draw_maze(maze_context, {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
-  
-  $('.bxslider').bxSlider({onSlideAfter: function(elem, prevIndex, curIndex){
-    var canvas = $(elem["0"]).find("canvas");
+  function draw_once(id) {
+    var canvas = $('#' + id);
     if (!canvas.attr("loaded")) {
-      // TODO: do the canvas drawing here
       canvas.attr("loaded", true);
-      var canvas_id = canvas.attr("id");
-      console.log(canvas_id);
+      drawing_funcs[id]();
+      console.log(id);
     }
-  }});
+  }
+
+  var bxslider = $('.bxslider').bxSlider({
+    onSliderLoad: function() {
+      var id = Object.keys(drawing_funcs)[0];
+      draw_once(id);
+    },
+    onSlideAfter: function(elem, prevIndex, curIndex) {
+      var canvas = $(elem["0"]).find("canvas");
+      draw_once(canvas.attr("id"));
+    }
+});
+
+  bxslider.goToSlide(0);
 });
 </script>
 </head>
