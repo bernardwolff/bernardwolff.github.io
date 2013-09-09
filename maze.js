@@ -71,7 +71,7 @@ function draw_maze(context, params) {
 
   var current_point = {x: 0, y: 0};
 
-  function draw_maze(current_point) {
+  function draw_maze_internal(current_point) {
     fill_cell(current_point, params.cell_color);
 
     mark_visited(current_point);
@@ -86,11 +86,11 @@ function draw_maze(context, params) {
       var wall_cell = {x: (current_point.x + random_neighbor.x) / 2, y: (current_point.y + random_neighbor.y) / 2};
       fill_cell(wall_cell, params.cell_color);
 
-      draw_maze(random_neighbor, wall_cell);
+      draw_maze_internal(random_neighbor);
 
       neighbors = get_neighbors(current_point);
     }
   }
 
-  draw_maze(current_point);
+  draw_maze_internal(current_point);
 }
