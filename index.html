@@ -61,6 +61,11 @@ function three_branch_tree(branch_angle) {
 }
 
 var drawing_funcs = {
+  maze: function() {
+    var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
+    draw_maze(maze_context,
+      {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
+  },
   barnsley: function() {
     draw_barnsley_fern(init_canvas('barnsley', '#FFFFFF', '#009900'), {
       scale: 30,
@@ -72,11 +77,6 @@ var drawing_funcs = {
   mandelbrot: function() {
     draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
       {color_depth: 16777215, max_iteration: 100});
-  },
-  maze: function() {
-    var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
-    draw_maze(maze_context,
-      {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
   }
 };
 
@@ -109,7 +109,7 @@ $(document).ready(function(){
       var canvas = $(elem["0"]).find("canvas");
       draw_once(canvas.attr("id"));
     }
-});
+  });
 
   bxslider.goToSlide(0);
 });
@@ -118,6 +118,11 @@ $(document).ready(function(){
 <body>
 <div class="wrapper">
   <ul class="bxslider">
+    <li>
+      <div class="canvas_wrapper">
+        <canvas id="maze" width="320" height="320"></canvas>
+      </div>
+    </li>
     <li>
       <div class="canvas_wrapper">
         <canvas id="barnsley" width="220" height="320"></canvas>
@@ -135,11 +140,6 @@ $(document).ready(function(){
     <li>
       <div class="canvas_wrapper">
         <canvas id="mandelbrot" width="320" height="320"></canvas>
-      </div>
-    </li>
-    <li>
-      <div class="canvas_wrapper">
-        <canvas id="maze" width="320" height="320"></canvas>
       </div>
     </li>
   </ul>
