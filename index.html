@@ -73,7 +73,9 @@ var drawing_funcs = {
       yoffset: 10,
     });
   },
-  tree: function() { three_branch_tree(parseInt($('#angle').text())); },
+  tree: function() {
+    three_branch_tree(parseInt($('#angle').text()));
+  },
   mandelbrot: function() {
     draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
       {color_depth: 16777215, max_iteration: 100});
@@ -118,29 +120,21 @@ $(document).ready(function(){
 <body>
 <div class="wrapper">
   <ul class="bxslider">
-    <li>
-      <div class="canvas_wrapper">
-        <canvas id="maze" width="320" height="320"></canvas>
+    <li class="canvas_wrapper">
+      <canvas id="maze" width="320" height="320"></canvas>
+    </li>
+    <li class="canvas_wrapper">
+      <canvas id="barnsley" width="220" height="320"></canvas>
+    </li>
+    <li class="canvas_wrapper">
+      <canvas id="tree" width="320" height="320"></canvas>
+      <div class="canvas_controls">
+        <div id="slider" ></div>
+        <span> Branch Angle: <span id="angle">30</span>&deg;</span>
       </div>
     </li>
-    <li>
-      <div class="canvas_wrapper">
-        <canvas id="barnsley" width="220" height="320"></canvas>
-      </div>
-    </li>
-    <li>
-      <div class="canvas_wrapper">
-        <canvas id="tree" width="320" height="320"></canvas>
-        <div class="canvas_controls">
-          <div id="slider" ></div>
-          <span> Branch Angle: <span id="angle">30</span>&deg;</span>
-        </div>
-      </div>
-    </li>
-    <li>
-      <div class="canvas_wrapper">
-        <canvas id="mandelbrot" width="320" height="320"></canvas>
-      </div>
+    <li class="canvas_wrapper">
+      <canvas id="mandelbrot" width="320" height="320"></canvas>
     </li>
   </ul>
 </div>
