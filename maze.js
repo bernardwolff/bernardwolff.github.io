@@ -50,8 +50,8 @@ function draw_maze(context, params) {
     var x = point.x * params.cell_size + border_width;
     var y = point.y * params.cell_size + border_width;
     maze_cells.push({'x': x, 'y': y});
-    context.fillStyle = params.cell_color;
-    context.fillRect(x, y, grid_size, grid_size);
+    //context.fillStyle = params.cell_color;
+    //context.fillRect(x, y, grid_size, grid_size);
   }
 
   function visited(point) {
@@ -89,7 +89,7 @@ function draw_maze(context, params) {
   function render() {
     if (maze_cells.length > 0) {
       var cur = (new Date()).getTime(); 
-      if (cur - last > 500) {
+      if (cur - last > 10) {
         context.fillStyle = params.cell_color;
         var cell = maze_cells.shift();
         context.fillRect(cell.x, cell.y, grid_size, grid_size);
@@ -123,5 +123,5 @@ function draw_maze(context, params) {
 
   draw_maze_internal(current_point);
 
-  //render();
+  render();
 }
