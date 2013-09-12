@@ -64,7 +64,7 @@ var drawing_funcs = {
   maze: function() {
     var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
     draw_maze(maze_context,
-      {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000'});
+      {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000', goal_cell_color: '#00FF00'});
   },
   barnsley: function() {
     draw_barnsley_fern(init_canvas('barnsley', '#FFFFFF', '#009900'), {

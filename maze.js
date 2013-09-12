@@ -86,14 +86,25 @@ function draw_maze(context, params) {
     return neighbors;
   }
 
+  var cur_cell_index = 0;
   function render() {
-    if (maze_cells.length > 0) {
+    if (cur_cell_index < maze_cells.length) {
       var cur = (new Date()).getTime(); 
       if (cur - last > 10) {
-        context.fillStyle = params.cell_color;
-        var cell = maze_cells.shift();
+        var cell = maze_cells[cur_cell_index];
+        context.fillStyle = params.current_cell_color;
+        if (cur_cell_index == 0) {
+          context.fillStyle = params.goal_cell_color;
+        }
         context.fillRect(cell.x, cell.y, grid_size, grid_size);
+
+        if (cur_cell_index > 1) {
+          var cell = maze_cells[cur_cell_index - 1];
+          context.fillStyle = params.cell_color;
+          context.fillRect(cell.x, cell.y, grid_size, grid_size);
+        }
         last = cur;
+        cur_cell_index++;
       }
 
       requestAnimFrame(render);
