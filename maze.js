@@ -46,12 +46,14 @@ function draw_maze(context, params) {
     }
   }*/
 
-  function add_maze_cell(point) {
+  function midpoint(point1, point2) {
+    return {x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2};
+  }
+
+  function add_maze_cell(point, goal_cell) {
     var x = point.x * params.cell_size + border_width;
     var y = point.y * params.cell_size + border_width;
     maze_cells.push({'x': x, 'y': y});
-    //context.fillStyle = params.cell_color;
-    //context.fillRect(x, y, grid_size, grid_size);
   }
 
   function visited(point) {
@@ -84,8 +86,6 @@ function draw_maze(context, params) {
     return neighbors;
   }
 
-  var current_point = {x: 0, y: 0};
-  
   function render() {
     if (maze_cells.length > 0) {
       var cur = (new Date()).getTime(); 
@@ -112,7 +112,7 @@ function draw_maze(context, params) {
       var r = Math.floor(Math.random() * neighbors.length);
       var random_neighbor = neighbors[r];
 
-      var wall_cell = {x: (current_point.x + random_neighbor.x) / 2, y: (current_point.y + random_neighbor.y) / 2};
+      var wall_cell = midpoint(current_point, random_neighbor);
       add_maze_cell(wall_cell);
 
       draw_maze_internal(random_neighbor);
@@ -121,7 +121,7 @@ function draw_maze(context, params) {
     }
   }
 
-  draw_maze_internal(current_point);
+  draw_maze_internal({x: 0, y: 0});
 
   render();
 }
