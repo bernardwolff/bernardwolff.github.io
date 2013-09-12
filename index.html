@@ -97,7 +97,10 @@ $(document).ready(function(){
     var canvas = $('#' + id);
     if (!canvas.attr("loaded")) {
       canvas.attr("loaded", true);
-      drawing_funcs[id]();
+      var func = drawing_funcs[id];
+      if (func !== undefined) {
+        func();
+      }
       console.log(id);
     }
   }
@@ -135,6 +138,18 @@ $(document).ready(function(){
     </li>
     <li class="canvas_wrapper">
       <canvas id="mandelbrot" width="320" height="320"></canvas>
+    </li>
+    <li class="canvas_wrapper">
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      this space intentionally left blank
     </li>
   </ul>
 </div>
