@@ -50,10 +50,11 @@ function draw_maze(context, params) {
     return {x: (point1.x + point2.x) / 2, y: (point1.y + point2.y) / 2};
   }
 
-  function add_maze_cell(point, goal_cell) {
+  function add_maze_cell(point, parent_cell_index) {
     var x = point.x * params.cell_size + border_width;
     var y = point.y * params.cell_size + border_width;
-    maze_cells.push({'x': x, 'y': y});
+    maze_cells.push({'x': x, 'y': y, parent_cell: parent_cell_index});
+    return maze_cells.length - 1;
   }
 
   function visited(point) {
@@ -86,21 +87,28 @@ function draw_maze(context, params) {
     return neighbors;
   }
 
+  function fill_cell(index, color) {
+    var cell = maze_cells[index];
+    context.fillStyle = cell.color || color; 
+    context.fillRect(cell.x, cell.y, grid_size, grid_size);
+  }
+
   var cur_cell_index = 0;
   function render() {
     if (cur_cell_index < maze_cells.length) {
       var cur = (new Date()).getTime(); 
       if (cur - last > 10) {
         var cell = maze_cells[cur_cell_index];
-        context.fillStyle = params.current_cell_color;
+        /*context.fillStyle = params.current_cell_color;
         if (cur_cell_index == 0) {
           context.fillStyle = params.goal_cell_color;
         }
-        context.fillRect(cell.x, cell.y, grid_size, grid_size);
+        context.fillRect(cell.x, cell.y, grid_size, grid_size);*/
+        fill_cell(cur_cell_index, cur_cell_index == 0 ? params.goal_cell_color : params.current_cell_color);
 
         if (cur_cell_index > 1) {
           var cell = maze_cells[cur_cell_index - 1];
-          context.fillStyle = params.cell_color;
+          context.fillStyle = cell.color || params.cell_color;
           context.fillRect(cell.x, cell.y, grid_size, grid_size);
         }
         last = cur;
@@ -111,8 +119,17 @@ function draw_maze(context, params) {
     }
   }
 
-  function draw_maze_internal(current_point) {
-    add_maze_cell(current_point);
+  function mark_path() {
+    var cell = maze_cells[maze_cells.length - 2];
+    while (cell.parent_cell !== undefined) {
+      maze_cells[cell.parent_cell[1]].color = params.hint_color;
+      cell.color = params.hint_color;
+      cell = maze_cells[cell.parent_cell[0]];
+    }
+  }
+
+  function draw_maze_internal(current_point, parent_cell_index) {
+    var cur_cell_index = add_maze_cell(current_point, parent_cell_index);
 
     mark_visited(current_point);
 
@@ -124,15 +141,16 @@ function draw_maze(context, params) {
       var random_neighbor = neighbors[r];
 
       var wall_cell = midpoint(current_point, random_neighbor);
-      add_maze_cell(wall_cell);
+      var cell_index = add_maze_cell(wall_cell, parent_cell_index);
 
-      draw_maze_internal(random_neighbor);
+      draw_maze_internal(random_neighbor, [cell_index, cur_cell_index]);
 
       neighbors = get_neighbors(current_point);
     }
   }
 
   draw_maze_internal({x: 0, y: 0});
+  mark_path();
 
   render();
 }
