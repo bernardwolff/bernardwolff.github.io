@@ -123,10 +123,9 @@ function draw_maze(context, params) {
   function mark_path(from_cell_index) {
     var cell = maze_cells[from_cell_index];
     while (cell.parent_cell !== undefined) {
-      maze_cells[cell.parent_cell[1]].color = params.hint_color;
-      maze_cells[cell.parent_cell[0]].color = params.hint_color;
+      //maze_cells[cell.parent_cell].color = params.hint_color;
       cell.color = from_cell_index == 0 ? params.goal_cell_color : params.hint_color;
-      cell = maze_cells[cell.parent_cell[0]];
+      cell = maze_cells[cell.parent_cell];
     }
   }
 
@@ -143,9 +142,9 @@ function draw_maze(context, params) {
       var random_neighbor = neighbors[r];
 
       var wall_cell = midpoint(current_point, random_neighbor);
-      var cell_index = add_maze_cell(wall_cell, parent_cell_index);
+      var cell_index = add_maze_cell(wall_cell, cur_cell_index);
 
-      draw_maze_internal(random_neighbor, [cell_index, cur_cell_index]);
+      draw_maze_internal(random_neighbor, cell_index);
 
       neighbors = get_neighbors(current_point);
     }
