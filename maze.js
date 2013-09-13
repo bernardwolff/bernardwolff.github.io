@@ -98,18 +98,9 @@ function draw_maze(context, params) {
     if (cur_cell_index < maze_cells.length) {
       var cur = (new Date()).getTime(); 
       if (cur - last > 10) {
-        var cell = maze_cells[cur_cell_index];
-        /*context.fillStyle = params.current_cell_color;
-        if (cur_cell_index == 0) {
-          context.fillStyle = params.goal_cell_color;
-        }
-        context.fillRect(cell.x, cell.y, grid_size, grid_size);*/
         fill_cell(cur_cell_index, cur_cell_index == 0 ? params.goal_cell_color : params.current_cell_color);
 
         if (cur_cell_index > 1) {
-          //var cell = maze_cells[cur_cell_index - 1];
-          //context.fillStyle = cell.color || params.cell_color;
-          //context.fillRect(cell.x, cell.y, grid_size, grid_size);
           fill_cell(cur_cell_index - 1, params.cell_color);
         }
         last = cur;
@@ -120,17 +111,28 @@ function draw_maze(context, params) {
     }
   }
 
+
   function mark_path(from_cell_index) {
     var cell = maze_cells[from_cell_index];
     while (cell.parent_cell !== undefined) {
-      //maze_cells[cell.parent_cell].color = params.hint_color;
       cell.color = from_cell_index == 0 ? params.goal_cell_color : params.hint_color;
       cell = maze_cells[cell.parent_cell];
     }
   }
 
-  function draw_maze_internal(current_point, parent_cell_index) {
+  function max(a, b) {
+    return a > b ? a : b;
+  }
+
+  var max_depth_index = 0;
+  var max_depth = 0;
+  function draw_maze_internal(current_point, parent_cell_index, depth) {
     var cur_cell_index = add_maze_cell(current_point, parent_cell_index);
+
+    if (depth > max_depth) {
+      max_depth_index = cur_cell_index;
+      max_depth = depth;
+    }
 
     mark_visited(current_point);
 
@@ -144,13 +146,13 @@ function draw_maze(context, params) {
       var wall_cell = midpoint(current_point, random_neighbor);
       var cell_index = add_maze_cell(wall_cell, cur_cell_index);
 
-      draw_maze_internal(random_neighbor, cell_index);
+      draw_maze_internal(random_neighbor, cell_index, depth + 1);
 
       neighbors = get_neighbors(current_point);
     }
   }
 
-  draw_maze_internal({x: 0, y: 0});
+  draw_maze_internal({x: 0, y: 0}, undefined, 0);
   mark_path(maze_cells.length - 2);
 
   render();
