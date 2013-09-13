@@ -53,7 +53,7 @@ function draw_maze(context, params) {
   function add_maze_cell(point, parent_cell_index) {
     var x = point.x * params.cell_size + border_width;
     var y = point.y * params.cell_size + border_width;
-    maze_cells.push({'x': x, 'y': y, parent_cell: parent_cell_index});
+    maze_cells.push({'x': x, 'y': y, parent_cell: parent_cell_index, color: params.cell_color});
     return maze_cells.length - 1;
   }
 
@@ -89,8 +89,10 @@ function draw_maze(context, params) {
 
   function fill_cell(index, color) {
     var cell = maze_cells[index];
-    context.fillStyle = cell.color || color; 
-    context.fillRect(cell.x, cell.y, grid_size, grid_size);
+    if (cell !== undefined) {
+      context.fillStyle = color || cell.color; 
+      context.fillRect(cell.x, cell.y, grid_size, grid_size);
+    }
   }
 
   var cur_cell_index = 0;
@@ -98,11 +100,8 @@ function draw_maze(context, params) {
     if (cur_cell_index < maze_cells.length) {
       var cur = (new Date()).getTime(); 
       if (cur - last > 10) {
-        fill_cell(cur_cell_index, cur_cell_index == 0 ? params.goal_cell_color : params.current_cell_color);
-
-        if (cur_cell_index > 1) {
-          fill_cell(cur_cell_index - 1, params.cell_color);
-        }
+        fill_cell(cur_cell_index);
+        fill_cell(cur_cell_index + 1, params.current_cell_color);
         last = cur;
         cur_cell_index++;
       }
@@ -115,7 +114,7 @@ function draw_maze(context, params) {
   function mark_path(from_cell_index) {
     var cell = maze_cells[from_cell_index];
     while (cell.parent_cell !== undefined) {
-      cell.color = from_cell_index == 0 ? params.goal_cell_color : params.hint_color;
+      cell.color = params.hint_color;
       cell = maze_cells[cell.parent_cell];
     }
   }
@@ -153,7 +152,9 @@ function draw_maze(context, params) {
   }
 
   draw_maze_internal({x: 0, y: 0}, undefined, 0);
-  mark_path(maze_cells.length - 2);
+  mark_path(max_depth_index);
+  maze_cells[max_depth_index].color = params.start_cell_color;
+  maze_cells[0].color = params.goal_cell_color;
 
   render();
 
