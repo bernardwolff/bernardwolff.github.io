@@ -107,9 +107,10 @@ function draw_maze(context, params) {
         fill_cell(cur_cell_index, cur_cell_index == 0 ? params.goal_cell_color : params.current_cell_color);
 
         if (cur_cell_index > 1) {
-          var cell = maze_cells[cur_cell_index - 1];
-          context.fillStyle = cell.color || params.cell_color;
-          context.fillRect(cell.x, cell.y, grid_size, grid_size);
+          //var cell = maze_cells[cur_cell_index - 1];
+          //context.fillStyle = cell.color || params.cell_color;
+          //context.fillRect(cell.x, cell.y, grid_size, grid_size);
+          fill_cell(cur_cell_index - 1, params.cell_color);
         }
         last = cur;
         cur_cell_index++;
@@ -119,11 +120,12 @@ function draw_maze(context, params) {
     }
   }
 
-  function mark_path() {
-    var cell = maze_cells[maze_cells.length - 2];
+  function mark_path(from_cell_index) {
+    var cell = maze_cells[from_cell_index];
     while (cell.parent_cell !== undefined) {
       maze_cells[cell.parent_cell[1]].color = params.hint_color;
-      cell.color = params.hint_color;
+      maze_cells[cell.parent_cell[0]].color = params.hint_color;
+      cell.color = from_cell_index == 0 ? params.goal_cell_color : params.hint_color;
       cell = maze_cells[cell.parent_cell[0]];
     }
   }
@@ -150,7 +152,9 @@ function draw_maze(context, params) {
   }
 
   draw_maze_internal({x: 0, y: 0});
-  mark_path();
+  mark_path(maze_cells.length - 2);
 
   render();
+
+  console.log("done");
 }
