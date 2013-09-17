@@ -1,5 +1,13 @@
 function draw_maze(context, params) {
   var last = (new Date()).getTime();
+  var max_depth_index = 0;
+  var max_depth = 0;
+  var grid_size = params.cell_size / 2;
+  var border_width = grid_size / 2;
+  var maze_width = context.canvas.width / params.cell_size; 
+  var maze_cells = [];
+  var grid = {};
+  var cur_cell_index = 0;
 
   window.requestAnimFrame = (function(callback) {
     return window.requestAnimationFrame ||
@@ -28,13 +36,6 @@ function draw_maze(context, params) {
     return;
   }
 
-  var grid_size = params.cell_size / 2;
-  var border_width = grid_size / 2;
-  var maze_width = context.canvas.width / params.cell_size; 
-  var maze_cells = [];
-
-  var grid = {};
-  var path = [];
 
   /*function fill_all() {
     for (var i = 0; i < maze_width; i++) {
@@ -95,7 +96,6 @@ function draw_maze(context, params) {
     }
   }
 
-  var cur_cell_index = 0;
   function render() {
     if (cur_cell_index < maze_cells.length) {
       var cur = (new Date()).getTime(); 
@@ -123,8 +123,6 @@ function draw_maze(context, params) {
     return a > b ? a : b;
   }
 
-  var max_depth_index = 0;
-  var max_depth = 0;
   function draw_maze_internal(current_point, parent_cell_index, depth) {
     var cur_cell_index = add_maze_cell(current_point, parent_cell_index);
 
@@ -155,8 +153,5 @@ function draw_maze(context, params) {
   mark_path(max_depth_index);
   maze_cells[max_depth_index].color = params.start_cell_color;
   maze_cells[0].color = params.goal_cell_color;
-
   render();
-
-  console.log("done");
 }
