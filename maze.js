@@ -3,6 +3,7 @@ function draw_maze(context, params) {
   this.max_depth_index = 0;
   this.maze_cells = [];
   this.hint_color = params.hint_color;
+  this.hint_on = false;
   var last = (new Date()).getTime();
   var max_depth = 0;
   var grid_size = params.cell_size / 2;
@@ -113,13 +114,18 @@ function draw_maze(context, params) {
   }
 
   this.traverse_path = function (from_cell_index, action) {
+    _this.hint_on = !_this.hint_on;
     var index = from_cell_index;
-    do {
-      var cell = _this.maze_cells[index];
-      cell.color = params.hint_color;
-      action(index, params.hint_color);
+    var cell = _this.maze_cells[index];
+    while (cell.parent_cell !== undefined) {
       index = cell.parent_cell;
-    } while (cell.parent_cell !== undefined);
+      cell = _this.maze_cells[index];
+      if (cell.parent_cell === undefined) {
+        break;
+      }
+      cell.color = _this.hint_on ? params.hint_color : params.cell_color;
+      action(index);
+    }
   }
 
   function max(a, b) {
