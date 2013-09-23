@@ -63,7 +63,7 @@ function three_branch_tree(branch_angle) {
 var drawing_funcs = {
   maze: function() {
     var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
-    draw_maze(maze_context,
+    maze_obj = draw_maze(maze_context,
       {cell_size: maze_context.canvas.width / 16, cell_color: '#E8EDE8', current_cell_color: '#FF0000', start_cell_color: '#E87600', goal_cell_color: '#00FF00', hint_color: '#0000FF'});
   },
   barnsley: function() {
@@ -125,6 +125,9 @@ $(document).ready(function(){
   <ul class="bxslider">
     <li class="canvas_wrapper">
       <canvas id="maze" width="320" height="320"></canvas>
+      <div class="canvas_controls">
+        <button onclick="maze_obj.traverse_path(maze_obj.max_depth_index, maze_obj.fill_cell)">Show Solution</button>
+      </div>
     </li>
     <li class="canvas_wrapper">
       <canvas id="barnsley" width="220" height="320"></canvas>
