@@ -19,7 +19,7 @@ function draw_maze(context, params) {
   var last = (new Date()).getTime();
   var max_depth = 0;
   var maze_width = context.canvas.width / params.cell_size; 
-  var grid = {};
+  _this.grid = {};
 
   window.requestAnimFrame = (function(callback) {
     return window.requestAnimationFrame ||
@@ -69,11 +69,11 @@ function draw_maze(context, params) {
   }
 
   function visited(point) {
-    return grid[point.x + "," + point.y] !== undefined;
+    return _this.grid[point.x + "," + point.y] !== undefined;
   }
 
-  function mark_visited(point) {
-    grid[point.x + "," + point.y] = {};
+  function mark_visited(point, index) {
+    _this.grid[point.x + "," + point.y] = index;
   }
 
   function on_grid(point) {
@@ -135,10 +135,20 @@ function draw_maze(context, params) {
       cell.color = _this.hint_on ? _this.colors.hint : _this.colors.main;
       action(_this.maze_cells[index]);
     }
+    show_current_cell();
+  }
+
+  function show_current_cell() {
+    _this.fill_cell(_this.current_point, _this.colors.current);
   }
 
   this.move = function (dir) {
     // neighboring cells (walls) are a half-step away
+    
+    if (_this.current_point === null) {
+      _this.current_point = _this.maze_cells[_this.max_depth_index];
+    }
+
     var new_point = null;
     switch(dir) {
       case 'H':
@@ -160,9 +170,9 @@ function draw_maze(context, params) {
     }
 
     if (new_point !== null && visited(new_point)) {
-      _this.fill_cell(_this.current_point, _this.colors.main);
-      _this.current_point = new_point;
-      _this.fill_cell(_this.current_point, _this.colors.current);
+      _this.fill_cell(_this.current_point);
+      _this.current_point = _this.maze_cells[_this.grid[new_point.x + ',' + new_point.y]];
+      show_current_cell();
     }
   }
 
@@ -178,7 +188,7 @@ function draw_maze(context, params) {
       max_depth = depth;
     }
 
-    mark_visited(current_point);
+    mark_visited(current_point, cur_cell_index);
 
     var neighbors = get_neighbors(current_point);
 
@@ -188,19 +198,17 @@ function draw_maze(context, params) {
       var random_neighbor = neighbors[r];
 
       var wall_cell = midpoint(current_point, random_neighbor);
-      mark_visited(wall_cell);
-      var cell_index = add_maze_cell(wall_cell, cur_cell_index);
+      var wall_cell_index = add_maze_cell(wall_cell, cur_cell_index);
+      mark_visited(wall_cell, wall_cell_index);
 
-      draw_maze_internal(random_neighbor, cell_index, depth + 1);
+      draw_maze_internal(random_neighbor, wall_cell_index, depth + 1);
 
       neighbors = get_neighbors(current_point);
     }
   }
 
   draw_maze_internal({x: 0, y: 0}, undefined, 0);
-  var last_point = _this.maze_cells[_this.max_depth_index];
-  _this.current_point = {x: last_point.x, y: last_point.y};
-  last_point.color = _this.colors.start;
+  _this.maze_cells[_this.max_depth_index].color = _this.colors.start;
   _this.maze_cells[0].color = _this.colors.goal;
   render();
 
