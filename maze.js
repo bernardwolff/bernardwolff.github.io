@@ -122,7 +122,7 @@ function draw_maze(context, params) {
     }
   }
 
-  this.traverse_path = function (from_cell_index, action) {
+  this.traverse_solution_path = function (from_cell_index, action) {
     _this.hint_on = !_this.hint_on;
     var index = from_cell_index;
     var cell = _this.maze_cells[index];
@@ -198,9 +198,6 @@ function draw_maze(context, params) {
   }
 
   draw_maze_internal({x: 0, y: 0}, undefined, 0);
-  /*this.traverse_path(_this.max_depth_index, function(index) {
-    // no-op
-  });*/
   var last_point = _this.maze_cells[_this.max_depth_index];
   _this.current_point = {x: last_point.x, y: last_point.y};
   last_point.color = _this.colors.start;
