@@ -117,6 +117,30 @@ $(document).ready(function(){
   });
 
   bxslider.goToSlide(0);
+
+  $(document).keydown(function(e){
+    var charCode = String.fromCharCode(e.keyCode);
+    if (maze_obj === undefined) {
+      return;
+    }
+
+    // TODO: check if we're on the maze slide 
+
+    switch(charCode) {
+      case 'H':
+        maze_obj.moveLeft();
+        break;
+      case 'J':
+        maze_obj.moveDown();
+        break;
+      case 'K':
+        maze_obj.moveUp();
+        break;
+      case 'L':
+        maze_obj.moveRight();
+        break;
+    }
+  });
 });
 </script>
 </head>

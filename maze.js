@@ -4,13 +4,13 @@ function draw_maze(context, params) {
   this.maze_cells = [];
   this.hint_color = params.hint_color;
   this.hint_on = false;
+  this.render_cell_index = 0;
   var last = (new Date()).getTime();
   var max_depth = 0;
   var grid_size = params.cell_size / 2;
   var border_width = grid_size / 2;
   var maze_width = context.canvas.width / params.cell_size; 
   var grid = {};
-  var cur_cell_index = 0;
 
   window.requestAnimFrame = (function(callback) {
     return window.requestAnimationFrame ||
@@ -100,13 +100,13 @@ function draw_maze(context, params) {
   }
 
   function render() {
-    if (cur_cell_index < _this.maze_cells.length) {
+    if (_this.render_cell_index < _this.maze_cells.length) {
       var cur = (new Date()).getTime(); 
       if (cur - last > 10) {
-        _this.fill_cell(cur_cell_index);
-        _this.fill_cell(cur_cell_index + 1, params.current_cell_color);
+        _this.fill_cell(_this.render_cell_index);
+        _this.fill_cell(_this.render_cell_index + 1, params.current_cell_color);
         last = cur;
-        cur_cell_index++;
+        _this.render_cell_index++;
       }
 
       requestAnimFrame(render);
@@ -126,6 +126,10 @@ function draw_maze(context, params) {
       cell.color = _this.hint_on ? params.hint_color : params.cell_color;
       action(index);
     }
+  }
+
+  this.moveLeft = function () {
+    
   }
 
   function max(a, b) {
