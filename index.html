@@ -4,7 +4,8 @@
 <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/bxslider/4.1/jquery.bxslider.css">
 
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+<script src="jquery.js"></script>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src="http://cdn.jsdelivr.net/bxslider/4.1/jquery.bxslider.min.js"></script>
 
@@ -36,6 +37,7 @@
 <script src="tree.js"></script>
 <script src="mandelbrot.js"></script>
 <script src="maze.js"></script>
+<script src="drag_toy.js"></script>
 
 <script type="text/javascript">
 function init_canvas(id, bgcolor, fgcolor) {
@@ -61,6 +63,7 @@ function three_branch_tree(branch_angle) {
 }
 
 var drawing_funcs = {
+  drag_toy: draw_drag_toy,
   maze: function() {
     var maze_context = init_canvas('maze', '#000000', '#E8EDE8');
     maze_obj = draw_maze(maze_context,
@@ -79,7 +82,7 @@ var drawing_funcs = {
   mandelbrot: function() {
     draw_mandelbrot(init_canvas('mandelbrot', '#000000', '#FFFFFF'),
       {color_depth: 16777215, max_iteration: 100});
-  }
+  },
 };
 
 $(document).ready(function(){
@@ -108,10 +111,12 @@ $(document).ready(function(){
   var bxslider = $('.bxslider').bxSlider({
     onSliderLoad: function() {
       var id = Object.keys(drawing_funcs)[0];
+      console.log('onSliderLoad');
       draw_once(id);
     },
     onSlideAfter: function(elem, prevIndex, curIndex) {
       var canvas = $(elem["0"]).find("canvas");
+      console.log('onSliderAfter');
       draw_once(canvas.attr("id"));
     }
   });
@@ -133,6 +138,9 @@ $(document).ready(function(){
 <body>
 <div class="wrapper">
   <ul class="bxslider">
+    <li class="canvas_wrapper">
+      <canvas id="drag_toy" width="320" height="320"></canvas>
+    </li>
     <li class="canvas_wrapper">
       <canvas id="maze" width="320" height="320"></canvas>
       <div class="canvas_controls">
