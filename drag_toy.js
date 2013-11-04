@@ -17,17 +17,19 @@ function draw_drag_toy() {
 
   $canvas.mousedown(function(){
     mousePressed = true;
+    chain.update();
   }).mousemove(function(e) {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
-    for (var i = 0; i < chain.links.length; i++) {
-      chain.links[i].moved = false;
-    }
     if (mousePressed) {
+      for (var i = 0; i < chain.links.length; i++) {
+        chain.links[i].moved = false;
+      }
       chain.update();
     }
   }).mouseup(function(){
     mousePressed = false;
+    chain.update();
   });
 
   function draw_circle(radius, centerX, centerY, fillColor, strokeColor) {
