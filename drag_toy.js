@@ -10,25 +10,22 @@ function draw_drag_toy() {
     new Link(5, 250, 250, 'yellow', '#000000'),
   ]);
 
-  setInterval(function() {
-    context.fillStyle = "gray";
-    context.fillRect(0, 0, 500, 500);
-
-    chain.update();
-  }, 30);
+  chain.update();
 
   var mouseX = 0, mouseY = 0;
   var mousePressed = false;
-  $canvas.mousemove(function(e) {
+
+  $canvas.mousedown(function(){
+    mousePressed = true;
+  }).mousemove(function(e) {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
     for (var i = 0; i < chain.links.length; i++) {
       chain.links[i].moved = false;
     }
-  })
-
-  $(document).mousedown(function(){
-    mousePressed = true;
+    if (mousePressed) {
+      chain.update();
+    }
   }).mouseup(function(){
     mousePressed = false;
   });
@@ -120,6 +117,9 @@ function draw_drag_toy() {
     }
 
     function update() {
+      context.fillStyle = "gray";
+      context.fillRect(0, 0, 500, 500);
+
       for (var i = 0; i < this.links.length; i++) {
         var cur = this.links[i];
         
