@@ -22,8 +22,8 @@ function draw_drag_toy() {
   $canvas.mousemove(function(e) {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
-    for (var i = 0; i < chain.circles.length; i++) {
-      chain.circles[i].moved = false;
+    for (var i = 0; i < chain.links.length; i++) {
+      chain.links[i].moved = false;
     }
   })
 
@@ -107,26 +107,26 @@ function draw_drag_toy() {
     this.move_to_point = move_to_point.bind(this);
   }
 
-  function DraggableChain(circles) {
-    this.circles = circles;
+  function DraggableChain(links) {
+    this.links = links;
 
-    for (var i = 0; i < circles.length; i++) {
+    for (var i = 0; i < links.length; i++) {
       if (i > 0) {
-        circles[i].neighbors.push(circles[i - 1]);
+        links[i].neighbors.push(links[i - 1]);
       }
-      if (i < circles.length - 1) {
-        circles[i].neighbors.push(circles[i + 1]);
+      if (i < links.length - 1) {
+        links[i].neighbors.push(links[i + 1]);
       }
     }
 
     function update() {
-      for (var i = 0; i < this.circles.length; i++) {
-        var cur = this.circles[i];
+      for (var i = 0; i < this.links.length; i++) {
+        var cur = this.links[i];
         
         cur.update();
 
         if (i > 0) {
-          var prev = this.circles[i - 1];
+          var prev = this.links[i - 1];
           context.beginPath();
           context.moveTo(prev.x, prev.y);
           context.lineTo(cur.x, cur.y);
