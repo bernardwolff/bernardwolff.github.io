@@ -4,31 +4,41 @@ function draw_drag_toy() {
   var context = canvas.getContext("2d");
 
   var chain = new DraggableChain([
-    new Link(5, 100, 100, 'blue', '#000000'),
-    new Link(5, 150, 150, 'red', '#000000'),
-    new Link(5, 200, 200, 'green', '#000000'),
-    new Link(5, 250, 250, 'yellow', '#000000'),
+    new Link(5, 100, 100, 'brown', 'black'),
+    new Link(5, 150, 150, 'brown', 'black'),
+    new Link(5, 200, 200, 'brown', 'black'),
+    new Link(5, 250, 250, 'brown', 'black'),
   ]);
 
   chain.update();
 
   var mouseX = 0, mouseY = 0;
   var mousePressed = false;
+  var ctrlPressed = false;
 
-  $canvas.mousedown(function(){
+  $canvas.mousedown(function(e){
     mousePressed = true;
+    ctrlPressed = e.ctrlKey;
     chain.update();
+    if (ctrlPressed && !chain.dragging) {
+      chain.new_link.x = e.offsetX;
+      chain.new_link.y = e.offsetY;
+      for (var i = 0; i < chain.new_link.neighbors.length; i++) {
+        chain.new_link.neighbors[i].neighbors.push(chain.new_link);
+      }
+      chain.links.push(chain.new_link); 
+      chain.set_new_link();
+      chain.update();
+    }
   }).mousemove(function(e) {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
     if (mousePressed) {
-      for (var i = 0; i < chain.links.length; i++) {
-        chain.links[i].moved = false;
-      }
       chain.update();
     }
   }).mouseup(function(){
     mousePressed = false;
+    chain.dragging = false;
     chain.update();
   });
 
@@ -37,7 +47,7 @@ function draw_drag_toy() {
     context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
     context.fillStyle = fillColor;
     context.fill();
-    context.lineWidth = 2;
+    context.lineWidth = 1;
     context.strokeStyle = strokeColor;
     context.stroke();
   }
@@ -49,6 +59,8 @@ function draw_drag_toy() {
     this.y = y;
     this.neighbors = [];
     this.moved = false;
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
 
     function update() {
       if (mousePressed) {
@@ -62,6 +74,9 @@ function draw_drag_toy() {
           startY = mouseY - this.y;
         }
         if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
+          if (ctrlPressed) {
+            chain.new_link.neighbors = [this];
+          }
           this.dragging = true;
         }
       } else {
@@ -72,7 +87,14 @@ function draw_drag_toy() {
         this.move_to_point(mouseX - startX, mouseY - startY);
       }
 
-      draw_circle(radius, this.x, this.y, fillColor, strokeColor);
+      for (var i = 0; i < this.neighbors.length; i++) {
+        var neighbor = this.neighbors[i];
+        context.beginPath();
+        context.moveTo(this.x, this.y);
+        context.lineTo(neighbor.x, neighbor.y);
+        context.stroke();
+      }
+      draw_circle(radius, this.x, this.y, this.fillColor, this.strokeColor);
     }
 
     function move_to_point(x, y) {
@@ -98,6 +120,7 @@ function draw_drag_toy() {
         neighbor.y = this.y - new_opp;*/
 
         neighbor.move_to_point(this.x - new_adj, this.y - new_opp);
+
       }
 
     }
@@ -109,6 +132,10 @@ function draw_drag_toy() {
   function DraggableChain(links) {
     this.links = links;
 
+    function set_new_link() {
+      this.new_link = new Link(5, 0, 0, 'white', 'black');
+    }
+
     for (var i = 0; i < links.length; i++) {
       if (i > 0) {
         links[i].neighbors.push(links[i - 1]);
@@ -119,24 +146,21 @@ function draw_drag_toy() {
     }
 
     function update() {
+      for (var i = 0; i < chain.links.length; i++) {
+        chain.links[i].moved = false;
+      }
       context.fillStyle = "gray";
       context.fillRect(0, 0, 500, 500);
 
       for (var i = 0; i < this.links.length; i++) {
-        var cur = this.links[i];
-        
-        cur.update();
-
-        if (i > 0) {
-          var prev = this.links[i - 1];
-          context.beginPath();
-          context.moveTo(prev.x, prev.y);
-          context.lineTo(cur.x, cur.y);
-          context.stroke();
-        }
+        this.links[i].update();
+        this.dragging = this.dragging || this.links[i].dragging;
       }
     }
 
     this.update = update.bind(this);
+    this.set_new_link = set_new_link.bind(this);
+
+    this.set_new_link();
   }
 }
