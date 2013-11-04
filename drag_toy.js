@@ -7,6 +7,7 @@ function draw_drag_toy() {
     new Link(5, 100, 100, 'blue', '#000000'),
     new Link(5, 150, 150, 'red', '#000000'),
     new Link(5, 200, 200, 'green', '#000000'),
+    new Link(5, 250, 250, 'yellow', '#000000'),
   ]);
 
   setInterval(function() {
