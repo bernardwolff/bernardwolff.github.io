@@ -23,6 +23,7 @@ function draw_drag_toy() {
     if (ctrlPressed && !chain.dragging) {
       chain.new_link.x = e.offsetX;
       chain.new_link.y = e.offsetY;
+      console.log('new link added at (' + e.offsetX + ', ' + e.offsetY + ')');
       for (var i = 0; i < chain.new_link.neighbors.length; i++) {
         chain.new_link.neighbors[i].neighbors.push(chain.new_link);
       }
@@ -77,7 +78,9 @@ function draw_drag_toy() {
           if (ctrlPressed) {
             chain.new_link.neighbors = [this];
           }
-          this.dragging = true;
+          if (!chain.dragging) {
+            this.dragging = true;
+          }
         }
       } else {
         this.dragging = false;
