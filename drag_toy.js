@@ -75,7 +75,9 @@ function draw_drag_toy() {
               this.neighbors.push(chain.last_new_link);
             }
           }
-          this.dragging = true;
+          if (!chain.dragging) {
+            this.dragging = true;
+          }
         }
       } else {
         this.dragging = false;
