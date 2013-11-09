@@ -21,12 +21,7 @@ function draw_drag_toy() {
     ctrlPressed = e.ctrlKey;
     chain.update();
     if (ctrlPressed && !chain.dragging) {
-      chain.new_link.x = e.offsetX;
-      chain.new_link.y = e.offsetY;
-      for (var i = 0; i < chain.new_link.neighbors.length; i++) {
-        chain.new_link.neighbors[i].neighbors.push(chain.new_link);
-      }
-      chain.links.push(chain.new_link); 
+      chain.add_new_link(e.offsetX, e.offsetY);
       chain.set_new_link();
       chain.update();
     }
@@ -76,6 +71,9 @@ function draw_drag_toy() {
         if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
           if (ctrlPressed) {
             chain.new_link.neighbors = [this];
+            if (chain.last_new_link !== undefined) {
+              this.neighbors.push(chain.last_new_link);
+            }
           }
           this.dragging = true;
         }
@@ -133,19 +131,22 @@ function draw_drag_toy() {
     this.links = links;
 
     function set_new_link() {
-      this.new_link = new Link(5, 0, 0, 'white', 'black');
+      var radius = 5, x = -1, y = -1, fill = 'white', stroke = 'black';
+      this.new_link = new Link(radius, x, y, fill, stroke);
     }
 
-    for (var i = 0; i < links.length; i++) {
-      if (i > 0) {
-        links[i].neighbors.push(links[i - 1]);
+    function add_new_link(x, y) {
+      chain.new_link.x = x;
+      chain.new_link.y = y;
+      for (var i = 0; i < chain.new_link.neighbors.length; i++) {
+        chain.new_link.neighbors[i].neighbors.push(chain.new_link);
       }
-      if (i < links.length - 1) {
-        links[i].neighbors.push(links[i + 1]);
-      }
+      chain.links.push(chain.new_link); 
+      chain.last_new_link = chain.new_link;
     }
 
     function update() {
+      this.dragging = false;
       for (var i = 0; i < chain.links.length; i++) {
         chain.links[i].moved = false;
       }
@@ -158,8 +159,18 @@ function draw_drag_toy() {
       }
     }
 
+    for (var i = 0; i < links.length; i++) {
+      if (i > 0) {
+        links[i].neighbors.push(links[i - 1]);
+      }
+      if (i < links.length - 1) {
+        links[i].neighbors.push(links[i + 1]);
+      }
+    }
+
     this.update = update.bind(this);
     this.set_new_link = set_new_link.bind(this);
+    this.add_new_link = add_new_link.bind(this);
 
     this.set_new_link();
   }
