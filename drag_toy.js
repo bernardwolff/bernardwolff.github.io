@@ -3,38 +3,30 @@ function draw_drag_toy() {
   var canvas = $canvas[0];
   var context = canvas.getContext("2d");
 
-  var chain = new DraggableChain([
-    new Link(5, 100, 100, 'brown', 'black'),
-    new Link(5, 150, 150, 'brown', 'black'),
-    new Link(5, 200, 200, 'brown', 'black'),
-    new Link(5, 250, 250, 'brown', 'black'),
+  var chain = new Chain([
+    new Link(null, 5, 150, 50, 'red', 'black'),
+    new Link(null, 5, 150, 100, 'purple', 'black'),
+    new Link(null, 5, 150, 150, 'blue', 'black'),
+    new Link(null, 5, 150, 200, 'green', 'black'),
+    new Link(null, 5, 150, 250, 'yellow', 'black'),
   ]);
 
-  chain.update();
-
-  var mouseX = 0, mouseY = 0;
   var mousePressed = false;
   var ctrlPressed = false;
 
   $canvas.mousedown(function(e){
     mousePressed = true;
     ctrlPressed = e.ctrlKey;
-    chain.update();
-    if (ctrlPressed && !chain.dragging) {
-      chain.add_new_link(e.offsetX, e.offsetY);
-      chain.set_new_link();
-      chain.update();
-    }
+    chain.mousedown(e.offsetX, e.offsetY);
   }).mousemove(function(e) {
-    mouseX = e.offsetX;
-    mouseY = e.offsetY;
+    chain.mousemove(e.offsetX, e.offsetY);
     if (mousePressed) {
       chain.update();
     }
   }).mouseup(function(){
     mousePressed = false;
     chain.dragging = false;
-    chain.update();
+    chain.mouseup();
   });
 
   function draw_circle(radius, centerX, centerY, fillColor, strokeColor) {
@@ -47,46 +39,53 @@ function draw_drag_toy() {
     context.stroke();
   }
 
-  function Link(radius, x, y, fillColor, strokeColor) {
-    var startX = 0, startY = 0;
-    this.dragging = false;
+  function Link(chain, radius, x, y, fillColor, strokeColor) {
     this.x = x;
     this.y = y;
+    this.startX = 0;
+    this.startY = 0;
+    this.dragging = false;
     this.neighbors = [];
     this.moved = false;
-    this.fillColor = fillColor;
-    this.strokeColor = strokeColor;
+    this.chain = chain;
 
-    function update() {
-      if (mousePressed) {
-        var left = this.x - radius;
-        var right = this.x + radius;
-        var top = this.y - radius;
-        var bottom = this.y + radius;
-        if (!this.dragging) {
+    this.mousedown = (function(mouseX, mouseY) {
+      var left = this.x - radius;
+      var right = this.x + radius;
+      var top = this.y - radius;
+      var bottom = this.y + radius;
+      if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
+        if (ctrlPressed/* && !this.dragging*/) {
+          this.chain.new_link.neighbors = [this];
+          if (this.chain.last_new_link !== undefined) {
+            this.neighbors.push(this.chain.last_new_link);
+            this.chain.last_new_link.neighbors.push(this);
+          }
+        }
+        //if (!chain.dragging) {
+          //console.log('drag start (' + fillColor + ')');
           // offset from center of circle where the mouse was clicked
-          startX = mouseX - this.x;
-          startY = mouseY - this.y;
-        }
-        if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
-          if (ctrlPressed) {
-            chain.new_link.neighbors = [this];
-            if (chain.last_new_link !== undefined) {
-              this.neighbors.push(chain.last_new_link);
-            }
-          }
-          if (!chain.dragging) {
-            this.dragging = true;
-          }
-        }
-      } else {
-        this.dragging = false;
+          this.startX = mouseX - this.x;
+          this.startY = mouseY - this.y;
+          this.dragging = true;
+        //}
       }
+    }).bind(this);
 
+    this.mousemove = (function(mouseX, mouseY) {
       if (this.dragging) {
-        this.move_to_point(mouseX - startX, mouseY - startY);
+        //this.dragging = false;
+        this.moved = false;
+        //console.log('mouse moved, moving');
+        this.move_to_point(mouseX - this.startX, mouseY - this.startY);
       }
+    }).bind(this);
 
+    this.mouseup = (function() {
+      this.dragging = false;
+    }).bind(this);
+
+    this.update = (function() {
       for (var i = 0; i < this.neighbors.length; i++) {
         var neighbor = this.neighbors[i];
         context.beginPath();
@@ -94,11 +93,12 @@ function draw_drag_toy() {
         context.lineTo(neighbor.x, neighbor.y);
         context.stroke();
       }
-      draw_circle(radius, this.x, this.y, this.fillColor, this.strokeColor);
-    }
+      draw_circle(radius, this.x, this.y, fillColor, this.strokeColor);
+    }).bind(this);
 
-    function move_to_point(x, y) {
+    this.move_to_point = (function(x, y) {
       if (this.moved) {
+        //console.log('alreaded moved (' + fillColor + ')');
         return;
       }
 
@@ -116,42 +116,37 @@ function draw_drag_toy() {
         var theta = Math.atan2(opp, adj);
         var new_adj = Math.cos(theta) * hyp;
         var new_opp = Math.sin(theta) * hyp;
-        /*neighbor.x = this.x - new_adj;
-        neighbor.y = this.y - new_opp;*/
 
+        //console.log('moving a neighbor (' + fillColor + ')');
         neighbor.move_to_point(this.x - new_adj, this.y - new_opp);
-
       }
-
-    }
-
-    this.update = update.bind(this);
-    this.move_to_point = move_to_point.bind(this);
+    }).bind(this);
   }
 
-  function DraggableChain(links) {
+  function Chain(links) {
     this.links = links;
+    for (var i = 0; i < this.links.length; i++) {
+      this.links[i].chain = this;
+    }
 
-    function set_new_link() {
+    this.set_new_link = (function() {
       var radius = 5, x = -1, y = -1, fill = 'white', stroke = 'black';
-      this.new_link = new Link(radius, x, y, fill, stroke);
-    }
+      this.new_link = new Link(this, radius, x, y, fill, stroke);
+    }).bind(this);
 
-    function add_new_link(x, y) {
-      chain.new_link.x = x;
-      chain.new_link.y = y;
-      for (var i = 0; i < chain.new_link.neighbors.length; i++) {
-        chain.new_link.neighbors[i].neighbors.push(chain.new_link);
+    this.add_new_link = (function(x, y) {
+      console.log('new link added at ' + x + ', ' + y);
+      this.new_link.x = x;
+      this.new_link.y = y;
+      for (var i = 0; i < this.new_link.neighbors.length; i++) {
+        this.new_link.neighbors[i].neighbors.push(this.new_link);
       }
-      chain.links.push(chain.new_link); 
-      chain.last_new_link = chain.new_link;
-    }
+      this.links.push(this.new_link); 
+      this.last_new_link = this.new_link;
+      this.update();
+    }).bind(this);
 
-    function update() {
-      this.dragging = false;
-      for (var i = 0; i < chain.links.length; i++) {
-        chain.links[i].moved = false;
-      }
+    this.update = (function() {
       context.fillStyle = "gray";
       context.fillRect(0, 0, 500, 500);
 
@@ -159,8 +154,38 @@ function draw_drag_toy() {
         this.links[i].update();
         this.dragging = this.dragging || this.links[i].dragging;
       }
-    }
+    }).bind(this);
 
+    this.mousemove = (function(mouseX, mouseY) {
+      for (var i = 0; i < this.links.length; i++) {
+        this.links[i].moved = false;
+      }
+      for (var i = 0; i < links.length; i++) {
+        links[i].mousemove(mouseX, mouseY);
+      }
+    }).bind(this);
+
+    this.mousedown = (function(mouseX, mouseY) {
+      for (var i = 0; i < links.length; i++) {
+        links[i].mousedown(mouseX, mouseY);
+      }
+      this.update();
+      if (ctrlPressed && !this.dragging) {
+        chain.add_new_link(mouseX, mouseY);
+        chain.set_new_link();
+      }
+      for (var i = 0; i < links.length; i++) {
+        links[i].mousedown(mouseX, mouseY);
+      }
+    }).bind(this);
+
+    this.mouseup = (function() {
+      for (var i = 0; i < links.length; i++) {
+        links[i].mouseup();
+      }
+    }).bind(this);
+
+    this.set_neighbors = (function() {
     for (var i = 0; i < links.length; i++) {
       if (i > 0) {
         links[i].neighbors.push(links[i - 1]);
@@ -168,12 +193,10 @@ function draw_drag_toy() {
       if (i < links.length - 1) {
         links[i].neighbors.push(links[i + 1]);
       }
-    }
-
-    this.update = update.bind(this);
-    this.set_new_link = set_new_link.bind(this);
-    this.add_new_link = add_new_link.bind(this);
+    }}).bind(this);
 
     this.set_new_link();
+    this.set_neighbors();
+    this.update();
   }
 }
