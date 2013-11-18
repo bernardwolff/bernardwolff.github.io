@@ -85,7 +85,11 @@ function draw_drag_toy() {
       this.dragging = false;
     }).bind(this);
 
-    this.update = (function() {
+    this.draw = (function() {
+      draw_circle(radius, this.x, this.y, fillColor, this.strokeColor);
+    }).bind(this);
+
+    this.draw_connectors = (function() {
       for (var i = 0; i < this.neighbors.length; i++) {
         var neighbor = this.neighbors[i];
         context.beginPath();
@@ -93,7 +97,6 @@ function draw_drag_toy() {
         context.lineTo(neighbor.x, neighbor.y);
         context.stroke();
       }
-      draw_circle(radius, this.x, this.y, fillColor, this.strokeColor);
     }).bind(this);
 
     this.move_to_point = (function(x, y) {
@@ -151,7 +154,10 @@ function draw_drag_toy() {
       context.fillRect(0, 0, 500, 500);
 
       for (var i = 0; i < this.links.length; i++) {
-        this.links[i].update();
+        this.links[i].draw_connectors();
+      }
+      for (var i = 0; i < this.links.length; i++) {
+        this.links[i].draw();
         this.dragging = this.dragging || this.links[i].dragging;
       }
     }).bind(this);
