@@ -4,11 +4,11 @@ function draw_drag_toy() {
   var context = canvas.getContext("2d");
 
   var chain = new Chain([
-    new Link(null, 5, 150, 50, 'red', 'black'),
-    new Link(null, 5, 150, 100, 'purple', 'black'),
-    new Link(null, 5, 150, 150, 'blue', 'black'),
-    new Link(null, 5, 150, 200, 'green', 'black'),
-    new Link(null, 5, 150, 250, 'yellow', 'black'),
+    new Link(null, 5, 173, 132, 'red', 'black'),
+    new Link(null, 5, 123, 132, 'purple', 'black'),
+    new Link(null, 5, 161, 164, 'blue', 'black'),
+    new Link(null, 5, 152, 115, 'green', 'black'),
+    new Link(null, 5, 134, 162, 'yellow', 'black'),
   ]);
 
   var mousePressed = false;
@@ -64,6 +64,7 @@ function draw_drag_toy() {
         }
         //if (!chain.dragging) {
           //console.log('drag start (' + fillColor + ')');
+          console.log('drag start ' + this.x + ', ' + this.y);
           // offset from center of circle where the mouse was clicked
           this.startX = mouseX - this.x;
           this.startY = mouseY - this.y;
