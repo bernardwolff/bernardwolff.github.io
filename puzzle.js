@@ -127,11 +127,13 @@ function draw_puzzle() {
     }).bind(this);
 
     this.move = (function(distanceX, distanceY) {
-      if (this.puzzle.check_overlap(this)) {
-        return;
-      }
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].move(distanceX, distanceY);
+      }
+      if (this.puzzle.check_overlap(this)) {
+        for (var i = 0; i < this.cells.length; i++) {
+          this.cells[i].move(-distanceX, -distanceY);
+        }
       }
     }).bind(this);
 
@@ -140,8 +142,10 @@ function draw_puzzle() {
         return false;
       }
       for (var i = 0; i < this.cells.length; i++) {
+        var c1 = this.cells[i];
         for (var j = 0; j < piece.cells.length; j++) {
-          if (this.cells[i].check_overlap(piece.cells[j])) {
+          var c2 = piece.cells[j];
+          if (c1.check_overlap(c2) || c2.check_overlap(c1)) {
             return true;
           }
         }
@@ -168,7 +172,7 @@ function draw_puzzle() {
       var top = this.y;
       var bottom = top + this.width;
       if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
-        console.log('drag start ' + mouseX + ', ' + mouseY);
+        console.log('drag start ' + mouseX + ', ' + mouseY + ' this.x=' + this.x + ', this.y=' + this.y);
         // offset from the upper-left corner of the cell
         this.startX = mouseX - this.x;
         this.startY = mouseY - this.y;
@@ -201,8 +205,9 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(cell) {
-      //return cell.x > this.x && cell.x < this.x + this.width
-      return false;
+      var dx = cell.x - this.x;
+      var dy = cell.y - this.y;
+      return dx >= 0 && dx < this.width && dy >= 0 && dy < this.width;
     }).bind(this);
   }
 }
