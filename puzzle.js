@@ -26,7 +26,7 @@ function draw_puzzle() {
   });
 
   var puzzle = new Puzzle([
-/*      new Piece([
+      new Piece([
         new Cell(0, 1, cell_width, 'teal', 'black'),
         new Cell(1, 1, cell_width, 'teal', 'black'),
       ]),
@@ -43,9 +43,9 @@ function draw_puzzle() {
         new Cell(2, 2, cell_width, 'white', 'black'),
         new Cell(2, 3, cell_width, 'white', 'black'),
         new Cell(3, 3, cell_width, 'white', 'black'),
-      ]),*/
-      new Piece([new Cell(1, 1, cell_width, 'teal', 'black')]),
-      new Piece([new Cell(2, 2, cell_width, 'goldenrod', 'black')]),
+      ]),
+      //new Piece([new Cell(1, 1, cell_width, 'teal', 'black')]),
+      //new Piece([new Cell(2, 2, cell_width, 'goldenrod', 'black')]),
   ], puzzle_width, puzzle_height, cell_width);
 
   puzzle.update();
