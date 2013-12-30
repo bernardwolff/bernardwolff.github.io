@@ -15,6 +15,7 @@ function draw_puzzle() {
     mousePressed = true;
     ctrlPressed = e.ctrlKey;
     puzzle.mousedown(e.offsetX, e.offsetY);
+    puzzle.update();
   }).mousemove(function(e) {
     puzzle.mousemove(e.offsetX, e.offsetY);
     if (mousePressed) {
@@ -42,9 +43,9 @@ function draw_puzzle() {
         new Cell(1, 3, cell_width, 'green', 'black'),
       ]),
       new Piece([
-        new Cell(2, 2, cell_width, 'white', 'black'),
-        new Cell(2, 3, cell_width, 'white', 'black'),
-        new Cell(3, 3, cell_width, 'white', 'black'),
+        new Cell(2, 2, cell_width, 'white', 'black', 0, 0),
+        new Cell(2, 3, cell_width, 'white', 'black', 0, 1),
+        new Cell(3, 3, cell_width, 'white', 'black', 1, 1),
       ]),
       //new Piece([new Cell(1, 1, cell_width, 'teal', 'black')]),
       //new Piece([new Cell(2, 2, cell_width, 'goldenrod', 'black')]),
@@ -58,6 +59,8 @@ function draw_puzzle() {
     this.height = height;
     this.background_color = 'gray';
     this.moves = 0;
+    this.active_piece = null;
+    this.solved = false;
 
     for (var i = 0; i < this.pieces.length; i++) {
       this.pieces[i].puzzle = this;
@@ -70,11 +73,13 @@ function draw_puzzle() {
     }).bind(this);
 
     this.mouseup = (function() {
-      for (var i = 0; i < this.pieces.length; i++) {
-        this.pieces[i].mouseup();
-      }      
-      this.moves++;
-      //console.log(this.moves + " moves");
+      if (this.active_piece !== null) {
+        this.active_piece.mouseup();
+        this.moves++;
+        this.solved = this.active_piece.in_goal_location();
+        this.set_active_piece(null);
+        //console.log(this.moves + " moves");
+      }
     }).bind(this);
 
     this.mousemove = (function(x, y) {
@@ -93,7 +98,13 @@ function draw_puzzle() {
       context.fillStyle = "black";
       context.font = "bold 12px sans-serif";
       context.textBaseline = "top";
-      context.fillText(this.moves + " moves", 0, 0);
+      var text = this.moves + " moves";
+      if (this.solved) {
+        context.fillStyle = "red";
+        context.font = "bold 20px sans-serif";
+        text = "solved in " + text + "!";
+      }
+      context.fillText(text, 0, 0);
     }).bind(this);
 
     this.check_overlap = (function(piece) {
@@ -105,9 +116,13 @@ function draw_puzzle() {
       return false;
     }).bind(this);
 
-    this.move_to_top = (function(piece) {
-      this.pieces.splice(this.pieces.indexOf(piece), 1);
-      this.pieces.push(piece);
+    this.set_active_piece = (function(piece) {
+      this.active_piece = piece;
+      var index = this.pieces.indexOf(piece);
+      if (index > -1) {
+        this.pieces.splice(index, 1);
+        this.pieces.push(piece);
+      }
     });
   }
 
@@ -213,14 +228,18 @@ function draw_puzzle() {
       }
     });
 
-    this.move_to_top = (function() {
-      this.puzzle.move_to_top(this);
+    this.in_goal_location = (function() {
+      var ret = true;
+      for (var i = 0; i < this.cells.length; i++) {
+        ret = ret && this.cells[i].in_goal_location();
+      }
+      return ret;
     });
 
     this.update();
   }
 
-  function Cell(x, y, width, fillColor, borderColor) {
+  function Cell(x, y, width, fillColor, borderColor, goal_x, goal_y) {
     this.width = width;
     this.x = x * this.width;
     this.y = y * this.width;
@@ -231,6 +250,8 @@ function draw_puzzle() {
     this.startX = 0;
     this.startY = 0;
     this.dragging = false;
+    this.goal_x = goal_x * this.width;
+    this.goal_y = goal_y * this.width;
 
     this.mousedown = (function(mouseX, mouseY) {
       var left = this.x;
@@ -243,7 +264,7 @@ function draw_puzzle() {
         this.startX = mouseX - this.x;
         this.startY = mouseY - this.y;
         this.dragging = true;
-        this.piece.move_to_top();
+        this.piece.puzzle.set_active_piece(this.piece);
       }
     }).bind(this);
 
@@ -279,5 +300,12 @@ function draw_puzzle() {
       var dy = Math.abs(y);
       return dx >= overlap_allowed && dx < this.width - overlap_allowed && dy >= overlap_allowed && dy < this.width - overlap_allowed ;
     }).bind(this);
+
+    this.in_goal_location = (function() {
+      if (this.goal_x === undefined || this.goal_y === undefined) {
+        return false;
+      }
+      return this.goal_x == this.x && this.goal_y == this.y;
+    });
   }
 }
