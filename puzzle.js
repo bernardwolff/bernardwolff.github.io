@@ -2,6 +2,7 @@ function draw_puzzle() {
   var puzzle_width = 400;
   var puzzle_height = 400;
   var cell_width = 100;
+  var overlap_allowed = 10;
   
   var $canvas = $("#puzzle");
   var canvas = $canvas[0];
@@ -23,6 +24,7 @@ function draw_puzzle() {
     mousePressed = false;
     puzzle.dragging = false;
     puzzle.mouseup();
+    puzzle.update();
   });
 
   var puzzle = new Puzzle([
@@ -55,6 +57,7 @@ function draw_puzzle() {
     this.width = width;
     this.height = height;
     this.background_color = 'gray';
+    this.moves = 0;
 
     for (var i = 0; i < this.pieces.length; i++) {
       this.pieces[i].puzzle = this;
@@ -70,6 +73,8 @@ function draw_puzzle() {
       for (var i = 0; i < this.pieces.length; i++) {
         this.pieces[i].mouseup();
       }      
+      this.moves++;
+      //console.log(this.moves + " moves");
     }).bind(this);
 
     this.mousemove = (function(x, y) {
@@ -85,6 +90,10 @@ function draw_puzzle() {
       for (var i = 0; i < this.pieces.length; i++) {
         this.pieces[i].update();
       }
+      context.fillStyle = "black";
+      context.font = "bold 12px sans-serif";
+      context.textBaseline = "top";
+      context.fillText(this.moves + " moves", 0, 0);
     }).bind(this);
 
     this.check_overlap = (function(piece) {
@@ -95,6 +104,11 @@ function draw_puzzle() {
       }
       return false;
     }).bind(this);
+
+    this.move_to_top = (function(piece) {
+      this.pieces.splice(this.pieces.indexOf(piece), 1);
+      this.pieces.push(piece);
+    });
   }
 
   function Piece(cells) {
@@ -126,17 +140,48 @@ function draw_puzzle() {
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].mouseup();
       }
+      if (this.puzzle.check_overlap(this)) {
+        //this.moveback();
+      }
+      this.snap_into_place_x();
+      this.snap_into_place_y();
     }).bind(this);
+
+    this.moveback = (function() {
+      for (var i = 0; i < this.cells.length; i++) {
+        this.cells[i].x = this.cells[i].last_x;
+        this.cells[i].y = this.cells[i].last_y;
+      }
+    });
 
     this.move = (function(distanceX, distanceY) {
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].move(distanceX, distanceY);
       }
-      if (this.puzzle.check_overlap(this)) {
-        for (var i = 0; i < this.cells.length; i++) {
-          this.cells[i].move(-distanceX, -distanceY);
+      /*if (this.puzzle.check_overlap(this)) {
+        this.overlaps = true;
+        if (Math.abs(distanceY) >= Math.abs(distanceX)) {
+          for (var i = 0; i < this.cells.length; i++) {
+            this.cells[i].move(-distanceX, 0);
+          }
+          if (this.puzzle.check_overlap(this)) {
+            for (var i = 0; i < this.cells.length; i++) {
+              this.cells[i].move(0, -distanceY);
+            }
+          }
+          //this.snap_into_place_x();
+        } else {
+          for (var i = 0; i < this.cells.length; i++) {
+            this.cells[i].move(0, -distanceY);
+          }
+          if (this.puzzle.check_overlap(this)) {
+            for (var i = 0; i < this.cells.length; i++) {
+              this.cells[i].move(-distanceX, 0);
+            }
+          }
+          //this.snap_into_place_y();
         }
-      }
+      }*/
     }).bind(this);
 
     this.check_overlap = (function(piece) {
@@ -155,6 +200,23 @@ function draw_puzzle() {
       return false;
     }).bind(this);
 
+    this.snap_into_place_x = (function() {
+      for (var i = 0; i < this.cells.length; i++) {
+        this.cells[i].x = Math.round(this.cells[i].x / cell_width) * cell_width;
+        this.cells[i].last_x = this.cells[i].x;
+      }
+    });
+    this.snap_into_place_y = (function() {
+      for (var i = 0; i < this.cells.length; i++) {
+        this.cells[i].y = Math.round(this.cells[i].y / cell_width) * cell_width;
+        this.cells[i].last_y = this.cells[i].y;
+      }
+    });
+
+    this.move_to_top = (function() {
+      this.puzzle.move_to_top(this);
+    });
+
     this.update();
   }
 
@@ -162,6 +224,8 @@ function draw_puzzle() {
     this.width = width;
     this.x = x * this.width;
     this.y = y * this.width;
+    this.last_x = this.x;
+    this.last_y = this.y;
     this.fillColor = fillColor;
     this.borderColor = borderColor;
     this.startX = 0;
@@ -174,11 +238,12 @@ function draw_puzzle() {
       var top = this.y;
       var bottom = top + this.width;
       if (mouseX < right && mouseX > left && mouseY < bottom && mouseY > top){
-        console.log('drag start ' + mouseX + ', ' + mouseY + ' this.x=' + this.x + ', this.y=' + this.y);
+        //console.log('drag start ' + mouseX + ', ' + mouseY + ' this.x=' + this.x + ', this.y=' + this.y);
         // offset from the upper-left corner of the cell
         this.startX = mouseX - this.x;
         this.startY = mouseY - this.y;
         this.dragging = true;
+        this.piece.move_to_top();
       }
     }).bind(this);
 
@@ -207,9 +272,12 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(cell) {
-      var dx = Math.abs(cell.x - this.x);
-      var dy = Math.abs(cell.y - this.y);
-      return dx >= 0 && dx < this.width && dy >= 0 && dy < this.width;
+      var x = cell.x - this.x;
+      var y = cell.y - this.y;
+      //console.log("y overlap: " + y + ", x overlap: " + x);
+      var dx = Math.abs(x);
+      var dy = Math.abs(y);
+      return dx >= overlap_allowed && dx < this.width - overlap_allowed && dy >= overlap_allowed && dy < this.width - overlap_allowed ;
     }).bind(this);
   }
 }
