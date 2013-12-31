@@ -164,7 +164,8 @@ function draw_puzzle() {
         this.cells[i].mouseup();
       }
       if (this.puzzle.check_overlap(this)) {
-        //this.moveback();
+        this.moveback();
+        return;
       }
       this.snap_into_place_x();
       this.snap_into_place_y();
@@ -301,12 +302,12 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(cell) {
-      var x = cell.x - this.x;
-      var y = cell.y - this.y;
-      //console.log("y overlap: " + y + ", x overlap: " + x);
-      var dx = Math.abs(x);
-      var dy = Math.abs(y);
-      return dx >= overlap_allowed && dx < this.width - overlap_allowed && dy >= overlap_allowed && dy < this.width - overlap_allowed ;
+      var dx = Math.abs(cell.x - this.x);
+      var dy = Math.abs(cell.y - this.y);
+      var full_overlap = x == 0 && y == 0;
+      //var partial_overlap = dx >= overlap_allowed && dx < this.width - overlap_allowed && dy >= overlap_allowed && dy < this.width - overlap_allowed ;
+      var partial_overlap = dx >= 0 && dx < this.width && dy >= 0 && dy < this.width;
+      return full_overlap || partial_overlap;
     }).bind(this);
 
     this.in_goal_location = (function() {
