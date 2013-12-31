@@ -14,10 +14,18 @@ function draw_puzzle() {
   $canvas.mousedown(function(e){
     mousePressed = true;
     ctrlPressed = e.ctrlKey;
-    puzzle.mousedown(e.offsetX, e.offsetY);
+    //var x = e.offsetX;
+    //var y = e.offsetY;
+    var x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+    var y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    puzzle.mousedown(x, y);
     puzzle.update();
   }).mousemove(function(e) {
-    puzzle.mousemove(e.offsetX, e.offsetY);
+    //var x = e.offsetX;
+    //var y = e.offsetY;
+    var x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+    var y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+    puzzle.mousemove(x, y);
     if (mousePressed) {
       puzzle.update();
     }
