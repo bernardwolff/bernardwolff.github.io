@@ -83,10 +83,8 @@ function draw_puzzle() {
     this.mouseup = (function() {
       if (this.active_piece !== null) {
         this.active_piece.mouseup();
-        this.moves++;
         this.solved = this.active_piece.in_goal_location();
         this.set_active_piece(null);
-        //console.log(this.moves + " moves");
       }
     }).bind(this);
 
@@ -116,12 +114,16 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(piece) {
+      var num_overlapping_pieces = 0;
       for (var i = 0; i < this.pieces.length; i++) {
+        /*if (this.pieces[i] === piece) {
+          continue;
+        }*/
         if (this.pieces[i].check_overlap(piece)) {
-          return true;
+          num_overlapping_pieces++; 
         }
       }
-      return false;
+      return num_overlapping_pieces;
     }).bind(this);
 
     this.set_active_piece = (function(piece) {
@@ -164,11 +166,18 @@ function draw_puzzle() {
         this.cells[i].mouseup();
       }
       this.snap_into_place();
-      if (this.puzzle.check_overlap(this)) {
+      var num_overlapping_pieces = this.puzzle.check_overlap(this);
+      if (num_overlapping_pieces > 1) {
         this.moveback();
         return;
       }
+      // overlapping with self (hasnt moved)
+      if (num_overlapping_pieces === 1) {
+        return;
+      } 
+
       this.save_last_pos();
+      this.puzzle.moves++;
     }).bind(this);
 
     this.moveback = (function() {
@@ -209,14 +218,14 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(piece) {
-      if (piece === this) {
+      /*if (piece === this) {
         return false;
-      }
+      }*/
       for (var i = 0; i < this.cells.length; i++) {
         var c1 = this.cells[i];
         for (var j = 0; j < piece.cells.length; j++) {
           var c2 = piece.cells[j];
-          if (c1.check_overlap(c2) || c2.check_overlap(c1)) {
+          if (c1.check_overlap(c2) /*|| c2.check_overlap(c1)*/) {
             return true;
           }
         }
