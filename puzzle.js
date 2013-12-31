@@ -163,12 +163,12 @@ function draw_puzzle() {
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].mouseup();
       }
+      this.snap_into_place();
       if (this.puzzle.check_overlap(this)) {
         this.moveback();
         return;
       }
-      this.snap_into_place_x();
-      this.snap_into_place_y();
+      this.save_last_pos();
     }).bind(this);
 
     this.moveback = (function() {
@@ -224,15 +224,24 @@ function draw_puzzle() {
       return false;
     }).bind(this);
 
-    this.snap_into_place_x = (function() {
+    function round_coords(x, y) {
+      return {
+        x: Math.round(x / cell_width) * cell_width,
+        y: Math.round(y / cell_width) * cell_width,
+      };
+    }
+
+    this.snap_into_place = (function() {
       for (var i = 0; i < this.cells.length; i++) {
-        this.cells[i].x = Math.round(this.cells[i].x / cell_width) * cell_width;
-        this.cells[i].last_x = this.cells[i].x;
+        var rounded_coords = round_coords(this.cells[i].x, this.cells[i].y);
+        this.cells[i].x = rounded_coords.x;
+        this.cells[i].y = rounded_coords.y;
       }
     });
-    this.snap_into_place_y = (function() {
+
+    this.save_last_pos = (function() {
       for (var i = 0; i < this.cells.length; i++) {
-        this.cells[i].y = Math.round(this.cells[i].y / cell_width) * cell_width;
+        this.cells[i].last_x = this.cells[i].x;
         this.cells[i].last_y = this.cells[i].y;
       }
     });
@@ -304,7 +313,7 @@ function draw_puzzle() {
     this.check_overlap = (function(cell) {
       var dx = Math.abs(cell.x - this.x);
       var dy = Math.abs(cell.y - this.y);
-      var full_overlap = x == 0 && y == 0;
+      var full_overlap = dx == 0 && dy == 0;
       //var partial_overlap = dx >= overlap_allowed && dx < this.width - overlap_allowed && dy >= overlap_allowed && dy < this.width - overlap_allowed ;
       var partial_overlap = dx >= 0 && dx < this.width && dy >= 0 && dy < this.width;
       return full_overlap || partial_overlap;
