@@ -129,7 +129,7 @@ function draw_puzzle() {
         this.pieces.splice(index, 1);
         this.pieces.push(piece);
       }
-    });
+    }).bind(this);
   }
 
   function Piece(cells) {
@@ -179,7 +179,7 @@ function draw_puzzle() {
         this.cells[i].x = this.cells[i].last_x;
         this.cells[i].y = this.cells[i].last_y;
       }
-    });
+    }).bind(this);
 
     this.move = (function(distanceX, distanceY) {
       for (var i = 0; i < this.cells.length; i++) {
@@ -243,14 +243,14 @@ function draw_puzzle() {
         this.cells[i].y = rounded_coords.y;
       }
       return has_moved;
-    });
+    }).bind(this);
 
     this.save_last_pos = (function() {
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].last_x = this.cells[i].x;
         this.cells[i].last_y = this.cells[i].y;
       }
-    });
+    }).bind(this);
 
     this.in_goal_location = (function() {
       var ret = true;
@@ -258,7 +258,7 @@ function draw_puzzle() {
         ret = ret && this.cells[i].in_goal_location();
       }
       return ret;
-    });
+    }).bind(this);
 
     this.update();
   }
@@ -330,6 +330,6 @@ function draw_puzzle() {
         return false;
       }
       return this.goal_x == this.x && this.goal_y == this.y;
-    });
+    }).bind(this);
   }
 }
