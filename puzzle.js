@@ -95,6 +95,7 @@ function render_puzzle(images) {
   });
 
   var puzzle = new Puzzle([
+      // puzzle designs from http://puzzlebeast.com/slidingblock/index.html
       // Simplicity
       new Piece('teal', 'black', images["Cyan"], [
         new Cell(0, 1, null, null, 0, 0, 20, 20),
