@@ -1,4 +1,62 @@
+function draw_rounded_rect(context, fillColor, borderColor, b, x, y, w, h, ne, se, sw, nw) {
+    /*x = x + b/2;
+    y = y + b/2;
+    w = w - b;
+    h = h - b;*/
+    context.beginPath();
+    context.moveTo(x+w/2,y);
+    
+    // ne corner
+    context.lineTo(x + w - ne, y);
+    context.arcTo(x + w, y, x + w, y + ne, ne);//corner,line end
+    context.lineTo(x + w, y + h/2);
+    
+    // se corner
+    context.lineTo(x+w, y+h/2+se);
+    context.arcTo(x+w,y+h,x+w-se,y+h, se);
+    context.lineTo(x+w/2,y+h);
+    
+    // sw corner
+    context.lineTo(x+w/2-sw, y+h);
+    context.arcTo(x,y+h,x,y+h/2-sw, sw);
+    context.lineTo(x,y+h/2);
+    
+    // nw corner
+    context.lineTo(x,y+h/2-nw);
+    context.arcTo(x,y,x+nw,y,nw);
+    context.lineTo(x+w/2,y);
+    
+    context.fillStyle = fillColor;
+    context.fill();
+    context.lineWidth = b;
+    context.strokeStyle = borderColor;
+    context.stroke();
+}
+
+function load_images(callback) {
+  var images = {};
+  var path = "puzzle";
+  var extension = "png";
+  var filenames = ['Black', 'Blue', 'Brown', 'Cyan', 'Gray', 'Green', 'Orange', 'Red'];
+  for (var i = 0; i < filenames.length; i++) {
+    var filename = filenames[i];
+    var num_images_loaded = 0;
+    images[filename] = new Image();
+    images[filename].onload = function() {
+      num_images_loaded++;
+      if (num_images_loaded >= filenames.length) {
+        callback(images);
+      }
+    }
+    images[filename].src = path + "/" + filename + '.' + extension;
+  }
+}
 function draw_puzzle() {
+  load_images(function(images) {
+    render_puzzle(images);
+  });
+}
+function render_puzzle(images) {
   var puzzle_width = 400;
   var puzzle_height = 400;
   var cell_width = 100;
@@ -37,35 +95,58 @@ function draw_puzzle() {
   });
 
   var puzzle = new Puzzle([
-      new Piece([
-        new Cell(0, 1, cell_width, 'teal', 'black'),
-        new Cell(1, 1, cell_width, 'teal', 'black'),
+      // Simplicity
+      new Piece('teal', 'black', images["Cyan"], [
+        new Cell(0, 1, null, null, 0, 0, 20, 20),
+        new Cell(1, 1, null, null, 20, 20, 0, 0),
       ]),
-      new Piece([
-        new Cell(2, 0, cell_width, 'yellow', 'black'),
-        new Cell(2, 1, cell_width, 'yellow', 'black'),
-        new Cell(3, 1, cell_width, 'yellow', 'black'),
+      new Piece('yellow', 'black', images["Orange"], [
+        new Cell(2, 0, null, null, 20, 0, 0, 20),
+        new Cell(2, 1, null, null, 0, 0, 20, 0),
+        new Cell(3, 1, null, null, 20, 20, 0, 0),
       ]),
-      new Piece([
-        new Cell(1, 2, cell_width, 'green', 'black'),
-        new Cell(1, 3, cell_width, 'green', 'black'),
+      new Piece('green', 'black', images["Green"], [
+        new Cell(1, 2, null, null, 20, 0, 0, 20),
+        new Cell(1, 3, null, null, 0, 20, 20, 0),
       ]),
-      new Piece([
-        new Cell(2, 2, cell_width, 'white', 'black', 0, 0),
-        new Cell(2, 3, cell_width, 'white', 'black', 0, 1),
-        new Cell(3, 3, cell_width, 'white', 'black', 1, 1),
+      new Piece('white', 'black', images['Red'], [
+        new Cell(2, 2, 0, 0, 20, 0, 0, 20),
+        new Cell(2, 3, 0, 1, 0, 0, 20, 0),
+        new Cell(3, 3, 1, 1, 20, 20, 0, 0),
       ]),
-      //new Piece([new Cell(1, 1, cell_width, 'teal', 'black')]),
-      //new Piece([new Cell(2, 2, cell_width, 'goldenrod', 'black')]),
-  ], puzzle_width, puzzle_height, cell_width);
+
+      // Two Bits
+      /*new Piece(null, null, images['Cyan'], [
+        new Cell(0, 0)
+      ]),
+      new Piece(null, null, images['Brown'], [
+        new Cell(1, 0)
+      ]),
+      new Piece(null, null, images['Orange'], [
+        new Cell(2, 0),
+        new Cell(3, 0),
+        new Cell(2, 1)
+      ]),
+      new Piece(null, null, images['Red'], [
+        new Cell(0, 1, 0, 0),
+        new Cell(1, 1, 1, 0),
+        new Cell(0, 2, 0, 1),
+        new Cell(1, 2, 1, 1),
+      ]),
+      new Piece(null, null, images['Green'], [
+        new Cell(3, 1),
+        new Cell(3, 2),
+        new Cell(3, 3),
+      ]),*/
+  ], puzzle_width, puzzle_height, 'gray');
 
   puzzle.update();
 
-  function Puzzle(pieces, width, height) {
+  function Puzzle(pieces, width, height, bgcolor) {
     this.pieces = pieces;
     this.width = width;
     this.height = height;
-    this.background_color = 'gray';
+    this.background_color = bgcolor; 
     this.moves = 0;
     this.active_piece = null;
     this.solved = false;
@@ -132,8 +213,12 @@ function draw_puzzle() {
     }).bind(this);
   }
 
-  function Piece(cells) {
+  function Piece(fillColor, borderColor, cellImage, cells) {
     this.cells = cells;
+    this.fillColor = fillColor;
+    this.borderColor = borderColor;
+    this.cellImage = cellImage;
+
     for (var i = 0; i < this.cells.length; i++) {
       this.cells[i].piece = this;
     }
@@ -263,19 +348,20 @@ function draw_puzzle() {
     this.update();
   }
 
-  function Cell(x, y, width, fillColor, borderColor, goal_x, goal_y) {
-    this.width = width;
-    this.x = x * this.width;
-    this.y = y * this.width;
+  function Cell(x, y, goal_x, goal_y, ne, se, sw, nw) {
+    this.width = cell_width;
+    this.x = x * cell_width;
+    this.y = y * cell_width;
     this.last_x = this.x;
     this.last_y = this.y;
-    this.fillColor = fillColor;
-    this.borderColor = borderColor;
+    //this.fillColor = fillColor;
+    //this.borderColor = borderColor;
     this.startX = 0;
     this.startY = 0;
     this.dragging = false;
-    this.goal_x = goal_x * this.width;
-    this.goal_y = goal_y * this.width;
+    this.goal_x = goal_x * cell_width;
+    this.goal_y = goal_y * cell_width;
+    //this.image = image;
 
     this.mousedown = (function(mouseX, mouseY) {
       var left = this.x;
@@ -307,8 +393,13 @@ function draw_puzzle() {
     }).bind(this);
 
     this.draw = (function() {
-      context.fillStyle = this.fillColor;
-      context.fillRect(this.x, this.y, this.width, this.width);
+      if (this.piece.cellImage !== undefined && this.piece.cellImage !== null) {
+        context.drawImage(this.piece.cellImage, this.x, this.y, this.width, this.width);
+        return;
+      }
+      //context.fillStyle = this.fillColor;
+      //context.fillRect(this.x, this.y, this.width, this.width);
+      draw_rounded_rect(context, this.piece.fillColor, this.piece.borderColor, 2, this.x, this.y, this.width, this.width, ne, se, sw, nw);
     }).bind(this);
 
     this.move = (function(distanceX, distanceY) {
@@ -317,6 +408,10 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(cell) {
+      var out_of_bounds = cell.x < 0 || cell.y < 0 || cell.x >= puzzle_width || cell.y >= puzzle_height; 
+      if (out_of_bounds) {
+        return true;
+      }
       var dx = Math.abs(cell.x - this.x);
       var dy = Math.abs(cell.y - this.y);
       var full_overlap = dx == 0 && dy == 0;
