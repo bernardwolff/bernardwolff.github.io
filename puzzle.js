@@ -114,16 +114,12 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(piece) {
-      var num_overlapping_pieces = 0;
       for (var i = 0; i < this.pieces.length; i++) {
-        /*if (this.pieces[i] === piece) {
-          continue;
-        }*/
         if (this.pieces[i].check_overlap(piece)) {
-          num_overlapping_pieces++; 
+          return true;
         }
       }
-      return num_overlapping_pieces;
+      return false;
     }).bind(this);
 
     this.set_active_piece = (function(piece) {
@@ -165,16 +161,14 @@ function draw_puzzle() {
       for (var i = 0; i < this.cells.length; i++) {
         this.cells[i].mouseup();
       }
-      this.snap_into_place();
-      var num_overlapping_pieces = this.puzzle.check_overlap(this);
-      if (num_overlapping_pieces > 1) {
+      var has_moved = this.snap_into_place();
+      if (!has_moved) {
+        return;
+      }
+      if (this.puzzle.check_overlap(this)) {
         this.moveback();
         return;
       }
-      // overlapping with self (hasnt moved)
-      if (num_overlapping_pieces === 1) {
-        return;
-      } 
 
       this.save_last_pos();
       this.puzzle.moves++;
@@ -218,9 +212,9 @@ function draw_puzzle() {
     }).bind(this);
 
     this.check_overlap = (function(piece) {
-      /*if (piece === this) {
+      if (piece === this) {
         return false;
-      }*/
+      }
       for (var i = 0; i < this.cells.length; i++) {
         var c1 = this.cells[i];
         for (var j = 0; j < piece.cells.length; j++) {
@@ -241,11 +235,14 @@ function draw_puzzle() {
     }
 
     this.snap_into_place = (function() {
+      var has_moved = false;
       for (var i = 0; i < this.cells.length; i++) {
         var rounded_coords = round_coords(this.cells[i].x, this.cells[i].y);
+        has_moved = has_moved || rounded_coords.x != this.cells[i].last_x || rounded_coords.y != this.cells[i].last_y;
         this.cells[i].x = rounded_coords.x;
         this.cells[i].y = rounded_coords.y;
       }
+      return has_moved;
     });
 
     this.save_last_pos = (function() {
