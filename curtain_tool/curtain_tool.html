@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <style>
+      #door {
+        height: 94px;
+        width: 35px;
+        background-color: red;
+        margin-right: 2px;
+      }
+      #living_room {
+        height: 75px;
+        width: 57px;
+        background-color: blue
+      }
+      #bedroom {
+        height: 75px;
+        width: 72px;
+        background-color: green;
+        margin-right: 100px;
+      }
+      .draggable {
+        float: left;
+        margin-top: 10px;
+      }
+      .title {
+        text-align: center;
+      }
+      .curtain .title {
+        height: 12px;
+        border-bottom: 1px dashed black;
+        font-size: 0.7em;
+        cursor: pointer;
+      }
+      .curtain {
+        opacity:0.8;
+        background-color: orange;
+        margin-right: 5px;
+        margin-top: 50px;
+      }
+      #king {
+        width: 102px;
+        height: 90px;
+        clear: both;
+      }
+      #queen {
+        width: 88px;
+        height: 88px;
+      }
+      #twin_xl {
+        width: 68px;
+        height: 90px;
+      }
+    </style>
+  <link rel="stylesheet" href="jquery-ui.css">
+  <script src="jquery-1.9.1.js"></script>
+  <script src="jquery-ui.js"></script>
+  <script src="jQueryRotateCompressed.js"></script>
+  <script>
+    $(function() {
+      $( ".draggable" ).draggable({ stack: ".draggable" });
+      $(".curtain .title").rotate({bind: {click: function() {
+            var parent = $(this).parent();
+            var rotated = parent.attr("rotated") === "true";
+            var angle = rotated ? 0 : 90;
+            parent.rotate({animateTo: angle});
+            parent.attr("rotated", !rotated);
+      }}});
+    });
+  </script>
+  </head>
+  <body>
+    <div id="bedroom" class="draggable"><div class="title">bedroom</div></div>
+    <div id="door" class="draggable"><div class="title">door</div></div>
+    <div id="living_room" class="draggable"><div class="title">living room</div></div>
+    <div id="king" class="draggable curtain"><div class="title">king</div></div>
+    <div id="queen" class="draggable curtain"><div class="title">queen</div></div>
+    <div id="twin_xl" class="draggable curtain"><div class="title">twin xl</div></div>
+  </body>
+</html>
