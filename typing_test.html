@@ -28,10 +28,13 @@ $(document).ready(function() {
 		var wpm = (word_count / minutes).toFixed(2);
 		
 		$('#words').text(word_count);
-		$('#minutes').text(minutes.toFixed(2));
+		$('#minutes').text(Math.floor(minutes));
 		$('#seconds').text(seconds.toFixed(1));
 		$('#wpm').text(wpm);
 		$('#summary').show();
+		if (minutes >= 1) {
+			$('#minute_wrapper').show();
+		}
 	});
 });
 </script>
@@ -40,7 +43,7 @@ $(document).ready(function() {
 <textarea id="typing_area" style="width: 640px; height: 320px;"></textarea>
 <div id="summary" style="display:none">
 	started at: <span id="start_time"></span><br>
-	<span id="words"></span> words,	<span id="minutes"></span> minutes <span id="seconds"></span> seconds (<span style="font-weight:bold"><span id="wpm"></span> wpm</span>)
+	<span id="words"></span> words,	<span id="minute_wrapper" style="display:none"><span id="minutes"></span> minutes </span><span id="seconds"></span> seconds (<span style="font-weight:bold"><span id="wpm"></span> wpm</span>)
 </div>
 </body>
 </html>
