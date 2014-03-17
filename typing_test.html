@@ -1,0 +1,46 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script>
+//http://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
+function pad(n, width, z) {
+  z = z || '0';
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+$(document).ready(function() {
+	var started = false;
+	$('#typing_area').bind('input propertychange', function() {
+		if (!started) {
+			start_time = new Date();
+			var hours = start_time.getHours();
+			var am_pm = hours < 12 ? 'am' : 'pm';
+			hours = ((hours + 11) % 12) + 1;
+			$('#start_time').text(hours + ':' + pad(start_time.getMinutes(), 2) + ':' + pad(start_time.getSeconds(), 2) + ' ' + am_pm);
+			started = true;
+		}
+		var current = new Date();
+		var seconds = (current - start_time) / 1000;
+		var minutes = seconds / 60;
+		var text = $('#typing_area').val();
+		var word_count = text.split(' ').length;
+		var wpm = (word_count / minutes).toFixed(2);
+		
+		$('#words').text(word_count);
+		$('#minutes').text(minutes.toFixed(2));
+		$('#seconds').text(seconds.toFixed(1));
+		$('#wpm').text(wpm);
+		$('#summary').show();
+	});
+});
+</script>
+</head>
+<body>
+<textarea id="typing_area" style="width: 640px; height: 320px;"></textarea>
+<div id="summary" style="display:none">
+	started at: <span id="start_time"></span><br>
+	<span id="words"></span> words,	<span id="minutes"></span> minutes <span id="seconds"></span> seconds (<span style="font-weight:bold"><span id="wpm"></span> wpm</span>)
+</div>
+</body>
+</html>
