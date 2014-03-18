@@ -17,12 +17,16 @@ $(document).ready(function() {
 		
 		$('#start_time').text(moment().format('h:mm:ss a'));
 		$('#words').text(word_count);
-		$('#minutes').text(Math.floor(minutes));
+		$('#minutes').text(minutes.toFixed(1));
 		$('#seconds').text(seconds.toFixed(1));
 		$('#wpm').text(wpm);
 		$('#summary').show();
 		if (minutes >= 1) {
+			$('#second_wrapper').hide();
 			$('#minute_wrapper').show();
+		} else {
+			$('#second_wrapper').show();
+			$('#minute_wrapper').hide();
 		}
 	});
 });
@@ -32,7 +36,7 @@ $(document).ready(function() {
 <textarea id="typing_area" style="width: 640px; height: 320px;"></textarea>
 <div id="summary" style="display:none">
 	started at: <span id="start_time"></span><br>
-	<span id="words"></span> words,	<span id="minute_wrapper" style="display:none"><span id="minutes"></span> minutes </span><span id="seconds"></span> seconds (<span style="font-weight:bold"><span id="wpm"></span> wpm</span>)
+	<span id="words"></span> words,	<span id="minute_wrapper" style="display:none"><span id="minutes"></span> minutes</span><span id="second_wrapper" style="display:none"><span id="seconds"></span> seconds</span> (<span style="font-weight:bold"><span id="wpm"></span> wpm</span>)
 </div>
 </body>
 </html>
