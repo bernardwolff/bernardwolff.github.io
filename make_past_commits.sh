@@ -9,8 +9,9 @@ do
   for i in {1..30}
   do
     echo "$DATE $i" > past_commit
-    git commit -am "$DATE $i" --date="$(date --date=$DATE)"
+    git commit -am "$DATE $i" --date="$(date --date=$DATE)" > /dev/null 2>&1
   done
+  
+  git push
 done
 
-git push
