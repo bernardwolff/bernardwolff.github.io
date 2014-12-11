@@ -1,0 +1,10 @@
+.canvas_wrapper {
+  /*float: left;*/
+  text-align: center;
+  padding: 0.5em;
+  /*border: 1px solid black;*/
+}
+
+.canvas_controls {
+  margin: 0.5em;
+}

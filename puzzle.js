@@ -62,14 +62,13 @@ function render_puzzle(images) {
   var cell_width = 100;
   var overlap_allowed = 10;
   
-  var $canvas = $("#puzzle");
-  var canvas = $canvas[0];
+  var canvas = document.getElementById("puzzle");
   var context = canvas.getContext("2d");
 
   var mousePressed = false;
   var ctrlPressed = false;
 
-  $canvas.mousedown(function(e){
+  canvas.onmousedown = function(e){
     mousePressed = true;
     ctrlPressed = e.ctrlKey;
     //var x = e.offsetX;
@@ -78,7 +77,8 @@ function render_puzzle(images) {
     var y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     puzzle.mousedown(x, y);
     puzzle.update();
-  }).mousemove(function(e) {
+  }
+  canvas.onmousemove = function(e) {
     //var x = e.offsetX;
     //var y = e.offsetY;
     var x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
@@ -87,12 +87,13 @@ function render_puzzle(images) {
     if (mousePressed) {
       puzzle.update();
     }
-  }).mouseup(function(){
+  }
+  canvas.onmouseup = function() {
     mousePressed = false;
     puzzle.dragging = false;
     puzzle.mouseup();
     puzzle.update();
-  });
+  };
 
   var puzzle = new Puzzle([
       // puzzle designs from http://puzzlebeast.com/slidingblock/index.html

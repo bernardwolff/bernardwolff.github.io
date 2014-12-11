@@ -1,4 +1,12 @@
 function draw_maze(context, params) {
+  params = params || {
+    cell_size: context.canvas.width / 16,
+    cell_color: '#E8EDE8',
+    current_cell_color: '#FF0000',
+    start_cell_color: '#E87600',
+    goal_cell_color: '#00FF00',
+    hint_color: '#0000FF'
+  };
   var _this = this;
   this.max_depth_index = 0;
   this.maze_cells = [];
@@ -122,6 +130,10 @@ function draw_maze(context, params) {
     }
   }
 
+  this.draw_solution = function () {
+    _this.traverse_solution_path(_this.max_depth_index, _this.fill_cell);
+  }
+
   this.traverse_solution_path = function (from_cell_index, action) {
     _this.hint_on = !_this.hint_on;
     var index = from_cell_index;
@@ -212,5 +224,16 @@ function draw_maze(context, params) {
   _this.maze_cells[0].color = _this.colors.goal;
   render();
 
+  $(document).keydown(function(e){
+    var charCode = String.fromCharCode(e.keyCode);
+    if (maze_obj === undefined) {
+      return;
+    }
+
+    _this.move(charCode);
+  });
+
   return this;
 }
+
+
