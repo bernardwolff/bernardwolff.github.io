@@ -1,0 +1,111 @@
+<h1>JavaScript for the Layperson</h1>
+
+Created by Bernard Wolff, last modified on Dec 01, 2015
+
+<p>This coffee read will give you some hints on how you can help optimize your day-to-day work using a programming language called JavaScript.  All web browsers have JavaScript built in, and it has been an integral part of the Web for well over a decade.  If you used the Web in the 90’s or early 00’s, you may recall hearing some bad press around JavaScript.  You may have even heard some experts recommend disabling it entirely, as it provided little more than superfluous animations or annoying popup windows.  Today, JavaScript is an essential component of the web, in use on nearly every website.  Don’t believe me? Try disabling JavaScript in your browser and see if any of the websites you visit on a day-to-day basis still work.</p>
+
+<h2>First, a brief history.</h2>
+<p>JavaScript was invented by Brendan Eich while he was a programmer for Netscape, one of the major players in the browser wars of the 90’s.  It was hastily written, by a single person, taking only 10 days for the first version to be created.  To put that into context, most other programming languages are created by a team, and take months or years before seeing their first public release.  It had numerous flaws, including memory leaks (it used lots of memory), had numerous bugs, and ran very slowly on the hardware that existed at the time.  Despite these flaws, JavaScript was a huge development in the history of the Web, although not perceived that way by the press, or the general public.<p>
+<p>Prior to this, the web was just a static repository for text, little more than a book in electronic form.  Its main interactive feature was its ability to link arbitrary text to other parts of the web, known as hypertext, referring to the fact that it allowed one to rapidly jump from one “page” to another.  Any other dynamic features beyond this had to be performed on the server (the computer which “served” the web pages to the viewer) and even then, a static unchangeable page of text would be returned to the web browser.</p>
+<p>JavaScript transformed the web from what was essentially a giant world-wide library into a platform for running interactive applications.  It took the community roughly ten years to fully embrace this paradigm shift.  Today, JavaScript is a respected, well performing platform that is used on nearly every corner of the Web.</p>
+
+<h2>So what?</h2>
+<p>If you’re not a programmer, you might be thinking, “this all sounds great, but why should I care? Writing computer code is difficult, and not something I have the time to learn.”   Don’t worry, JavaScript was written with the intention of being easy to use by regular people, and there are numerous ways in which you can make use of it in your day-to-day work that will help you be more efficient and get your job done more easily.  The rest of this article will describe a series of problems and how to solve them using a few short JavaScript statements.</p>
+
+<h2>The Recipes</h2>
+<em>Notes: These recipes are written for Google Chrome, but the instructions are very similar for other browsers. The recipes also assume that the website you are writing the scripts for is using jQuery, as most sites do.  If it is not, the commands will be similar, but usually less concise.  jQuery is a free collection of JavaScript code, known as a library, that is widely used throughout the web.  If you’re interested in learning more about jQuery, take a look at this <a href="http://blog.teamtreehouse.com/beginners-guide-to-jquery">excellent guide</a>.</em></p>
+
+<h3>Problem: How many are there?</h3>
+<p>We’ve all been there.  There’s a web page that you visit regularly, that has a list of several items, which is regularly updated and constantly changing.  You just want to know how many there are at a glance without having to count them all yourself.  We’ll look at a well-known page on the TNTP website as an example; Publications.</p>
+<ul>
+<li>Visit <a href="http://tntp.org/publications">http://tntp.org/publications</a></li>
+<li>Right-click one of the publications (e.g. The Mirage), and choose Inspect Element.  This will bring up the JavaScript console and highlight the element in the source. The following screenshot shows what this will look like.
+<div><img src="screenshot.png" height="250"></div></li>
+<li>A snippet of HTML code will be highlighted.  It will vary depending on where you clicked in the Mirage box.  As an example, it may look like this:
+<pre>&lt;span&gt;The Mirage&lt;/span&gt;</pre></li>
+Click on the highlighted piece of HTML to select it.
+Often times there is a containing element, so you will want to move the cursor up until the full element you want is highlighted.
+Press the up arrow on your keyboard until the following line is highlighted:
+<a href="/publications/view/evaluation-and-development/the-mirage-confronting-the-truth-about-our-quest-for-teacher-development" class="pub-tile featured">
+Notice the part that says class=”pub-tile featured”.  This means that this element is a member of two CSS classes, pub-tile and featured.  (CSS is a separate technology which is used to control the look of web pages.  Different elements of style such as color, size, or position, can be grouped into a class which is given a name.  If you’re interested in learning more about CSS, you can read Mozilla’s excellent guide.)  pub-tile sounds like a class that the rest of the publication “tiles” probably belong to.  To verify this, enter the following command into the console. Press the Esc, or Escape, key on your keyboard to bring up the console.
+$(“.pub-tile”);
+ 
+After typing in (or pasting) the command, press the Enter key on your keyboard.
+The command that you typed (or pasted) is called a selector because it selects elements. You should see several elements listed that have been selected, starting with the one for The Mirage that we highlighted earlier.
+Now, to verify that we have selected all the elements for the publications, type (or paste) the following command, which will put a 5 pixel red border around all the selected elements
+$(".pub-tile").css("border", "5px solid red");
+ 
+Scroll down the page and verify that all of the publication tiles are surrounded with a red border.
+Now that we know we have selected all the elements, we can ask the computer to count them.  Type the following command:
+$(".pub-tile").length;
+You should see the number 22 displayed within the console.
+Good.  We now know that there are 22 TNTP publications.
+Problem: List them all
+So now we know how many publications there are, but what if we want a list of all of the titles that we can easily copy and paste into an email or a document.  Type (or paste) the following statements into the console, the same way as before.
+function logText(index) {
+    console.log((index + 1) + ". " + $(this).text());
+}
+$(".pub-tile h3 span").each(logText);
+What this does is it finds all the publication tiles as before, and then for each of those, it calls a function, logText, which prints out the index of the item, along with the text contents. You should see all of the posts numbered 1 through 22 listed in the console output, as below.
+1. The Mirage
+2. The Widget Effect
+3. TNTP Core Teaching Rubric
+4. Teacher Evaluation 2.0
+5. Fixing Classroom Observations
+6. Shortchanged
+7. The Irreplaceables
+8. Greenhouse Schools in Boston
+9. Perspectives of Irreplaceable Teachers
+10. Keeping Irreplaceables in D.C. Public Schools
+11. Greenhouse Schools
+12. Students Center Stage
+13. Languages for Learning
+14. Unlocking Student Effort
+15. Leap Year
+16. Going Deep
+17. Fast Start
+18. Rebalancing Teacher Tenure
+19. Unintended Consequences
+20. Mutual Benefits
+21. Missed Opportunities
+22. The Case Against Quality-Blind Teacher Layoffs 
+Problem: What is the average time between blog posts?
+Here’s a more interesting (and complex) problem.
+Include an external library called Moment, by pasting the following into the console.  This library lets you work with dates and times more easily.
+     $.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js');
+Paste the following into the console.
+     var count = 0;
+     var lastDate = null;
+     var sum = 0;
+     function getDates () {
+         if (lastDate !== null) {
+            sum += this.diff(lastDate)
+            count++;
+         }
+         lastDate = this;
+     }
+     function sortDates(first, second) {
+         return first.diff(second);
+     }
+     function getMoments(index, element) {
+         return moment(Date.parse($(element).text()));
+     }
+     $(".pub-date-label").map(getMoments).sort(sortDates).each(getDates)
+     var average = sum / count / 1000 / 60 / 60 / 24;
+     console.log(average); 
+The average is, as of the time this post was written, 206.85515873015868 days.
+What this script does is it finds all of the publication date elements on the page (pub-date-label) then maps them to Moment objects, then sorts them, then goes through each of them and computes the sum and keeps a count of the differences, and finally it computes the average time.  Since the time is in milliseconds, the number is divided by 1000 to get seconds, then by 60 to get minutes, then by 60 again to get hours, and finally by 24 to get days.
+Problem: Download all the Reports
+Let’s say you want to download all the report PDFs.  Use this script to do so. Some of these won’t download because they require accepting an agreement.  While acceptance of the agreements is possible to automate with JavaScript, it adds considerable complexity to the script, as well as legal questions. So we won’t deal with it here.
+function downloadReport(data) {
+      var introText = $(data).find(".intro-text h1").text();
+      var attributes = {"download": introText};
+      $(data).find(".button-download").attr(attributes)[0].click();
+}
+function initiateDownload() {
+      $.get($(this).attr("href"), downloadReport);
+}
+$("a.pub-tile").each(initiateDownload);
+References
+JavaScript: The Good Parts [http://shop.oreilly.com/product/9780596517748.do]
+A Short History of JavaScript [http://www.w3.org/community/webed/wiki/A_Short_History_of_JavaScript]
