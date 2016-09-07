@@ -23,30 +23,30 @@ Created by Bernard Wolff, last modified on Dec 01, 2015
 <div><img src="screenshot.png" height="250"></div></li>
 <li>A snippet of HTML code will be highlighted.  It will vary depending on where you clicked in the Mirage box.  As an example, it may look like this:
 <pre>&lt;span&gt;The Mirage&lt;/span&gt;</pre></li>
-Click on the highlighted piece of HTML to select it.
-Often times there is a containing element, so you will want to move the cursor up until the full element you want is highlighted.
-Press the up arrow on your keyboard until the following line is highlighted:
-<a href="/publications/view/evaluation-and-development/the-mirage-confronting-the-truth-about-our-quest-for-teacher-development" class="pub-tile featured">
-Notice the part that says class=”pub-tile featured”.  This means that this element is a member of two CSS classes, pub-tile and featured.  (CSS is a separate technology which is used to control the look of web pages.  Different elements of style such as color, size, or position, can be grouped into a class which is given a name.  If you’re interested in learning more about CSS, you can read Mozilla’s excellent guide.)  pub-tile sounds like a class that the rest of the publication “tiles” probably belong to.  To verify this, enter the following command into the console. Press the Esc, or Escape, key on your keyboard to bring up the console.
-$(“.pub-tile”);
- 
-After typing in (or pasting) the command, press the Enter key on your keyboard.
-The command that you typed (or pasted) is called a selector because it selects elements. You should see several elements listed that have been selected, starting with the one for The Mirage that we highlighted earlier.
-Now, to verify that we have selected all the elements for the publications, type (or paste) the following command, which will put a 5 pixel red border around all the selected elements
-$(".pub-tile").css("border", "5px solid red");
- 
-Scroll down the page and verify that all of the publication tiles are surrounded with a red border.
-Now that we know we have selected all the elements, we can ask the computer to count them.  Type the following command:
-$(".pub-tile").length;
-You should see the number 22 displayed within the console.
-Good.  We now know that there are 22 TNTP publications.
-Problem: List them all
-So now we know how many publications there are, but what if we want a list of all of the titles that we can easily copy and paste into an email or a document.  Type (or paste) the following statements into the console, the same way as before.
-function logText(index) {
+<li>Click on the highlighted piece of HTML to select it.</li>
+<li>Often times there is a containing element, so you will want to move the cursor up until the full element you want is highlighted.</li>
+<li>Press the up arrow on your keyboard until the following line is highlighted:
+<pre>&lt;a href="/publications/view/evaluation-and-development/the-mirage-confronting-the-truth-about-our-quest-for-teacher-development" class="pub-tile featured"&gt;</pre></li>
+<li>Notice the part that says class=”pub-tile featured”.  This means that this element is a member of two CSS classes, pub-tile and featured.  (CSS is a separate technology which is used to control the look of web pages.  Different elements of style such as color, size, or position, can be grouped into a class which is given a name.  If you’re interested in learning more about CSS, you can read Mozilla’s excellent guide.)  pub-tile sounds like a class that the rest of the publication “tiles” probably belong to.  To verify this, enter the following command into the console. Press the Esc, or Escape, key on your keyboard to bring up the console.
+<pre>$(“.pub-tile”);</pre></li>
+<li>After typing in (or pasting) the command, press the Enter key on your keyboard.</li>
+<li>The command that you typed (or pasted) is called a selector because it selects elements. You should see several elements listed that have been selected, starting with the one for The Mirage that we highlighted earlier.</li>
+<li>Now, to verify that we have selected all the elements for the publications, type (or paste) the following command, which will put a 5 pixel red border around all the selected elements
+<pre>$(".pub-tile").css("border", "5px solid red");</pre></li>
+<li>Scroll down the page and verify that all of the publication tiles are surrounded with a red border.</li>
+<li>Now that we know we have selected all the elements, we can ask the computer to count them.  Type the following command:
+<pre>$(".pub-tile").length;</pre></li>
+<li>You should see the number 22 displayed within the console.</li>
+<li>Good.  We now know that there are 22 TNTP publications.</li>
+</ul>
+<h3>Problem: List them all</h3>
+<p>So now we know how many publications there are, but what if we want a list of all of the titles that we can easily copy and paste into an email or a document.  Type (or paste) the following statements into the console, the same way as before.</p>
+<pre>function logText(index) {
     console.log((index + 1) + ". " + $(this).text());
 }
-$(".pub-tile h3 span").each(logText);
-What this does is it finds all the publication tiles as before, and then for each of those, it calls a function, logText, which prints out the index of the item, along with the text contents. You should see all of the posts numbered 1 through 22 listed in the console output, as below.
+$(".pub-tile h3 span").each(logText);</pre>
+<p>What this does is it finds all the publication tiles as before, and then for each of those, it calls a function, logText, which prints out the index of the item, along with the text contents. You should see all of the posts numbered 1 through 22 listed in the console output, as below.</p>
+<pre>
 1. The Mirage
 2. The Widget Effect
 3. TNTP Core Teaching Rubric
@@ -69,11 +69,15 @@ What this does is it finds all the publication tiles as before, and then for eac
 20. Mutual Benefits
 21. Missed Opportunities
 22. The Case Against Quality-Blind Teacher Layoffs 
-Problem: What is the average time between blog posts?
-Here’s a more interesting (and complex) problem.
-Include an external library called Moment, by pasting the following into the console.  This library lets you work with dates and times more easily.
-     $.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js');
-Paste the following into the console.
+</pre>
+
+<h3>Problem: What is the average time between blog posts?</h3>
+<p>Here’s a more interesting (and complex) problem.</p>
+<ul>
+<li>Include an external library called Moment, by pasting the following into the console.  This library lets you work with dates and times more easily.
+<pre>$.getScript('https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js');</pre></li>
+<li>Paste the following into the console.
+<pre>
      var count = 0;
      var lastDate = null;
      var sum = 0;
@@ -93,11 +97,12 @@ Paste the following into the console.
      $(".pub-date-label").map(getMoments).sort(sortDates).each(getDates)
      var average = sum / count / 1000 / 60 / 60 / 24;
      console.log(average); 
-The average is, as of the time this post was written, 206.85515873015868 days.
-What this script does is it finds all of the publication date elements on the page (pub-date-label) then maps them to Moment objects, then sorts them, then goes through each of them and computes the sum and keeps a count of the differences, and finally it computes the average time.  Since the time is in milliseconds, the number is divided by 1000 to get seconds, then by 60 to get minutes, then by 60 again to get hours, and finally by 24 to get days.
-Problem: Download all the Reports
-Let’s say you want to download all the report PDFs.  Use this script to do so. Some of these won’t download because they require accepting an agreement.  While acceptance of the agreements is possible to automate with JavaScript, it adds considerable complexity to the script, as well as legal questions. So we won’t deal with it here.
-function downloadReport(data) {
+</pre></li></ul>
+<p>The average is, as of the time this post was written, <strong>206.85515873015868</strong> days.</p>
+<p>What this script does is it finds all of the publication date elements on the page (pub-date-label) then maps them to Moment objects, then sorts them, then goes through each of them and computes the sum and keeps a count of the differences, and finally it computes the average time.  Since the time is in milliseconds, the number is divided by 1000 to get seconds, then by 60 to get minutes, then by 60 again to get hours, and finally by 24 to get days.</p>
+<h3>Problem: Download all the Reports</h3>
+<p>Let’s say you want to download all the report PDFs.  Use this script to do so. Some of these won’t download because they require accepting an agreement.  While acceptance of the agreements is possible to automate with JavaScript, it adds considerable complexity to the script, as well as legal questions. So we won’t deal with it here.</p>
+<pre>function downloadReport(data) {
       var introText = $(data).find(".intro-text h1").text();
       var attributes = {"download": introText};
       $(data).find(".button-download").attr(attributes)[0].click();
@@ -105,7 +110,9 @@ function downloadReport(data) {
 function initiateDownload() {
       $.get($(this).attr("href"), downloadReport);
 }
-$("a.pub-tile").each(initiateDownload);
-References
-JavaScript: The Good Parts [http://shop.oreilly.com/product/9780596517748.do]
-A Short History of JavaScript [http://www.w3.org/community/webed/wiki/A_Short_History_of_JavaScript]
+$("a.pub-tile").each(initiateDownload);</pre>
+<h2>References</h2>
+<ol>
+<li>JavaScript: The Good Parts [<a href="http://shop.oreilly.com/product/9780596517748.do">http://shop.oreilly.com/product/9780596517748.do</a>]</li>
+<li>A Short History of JavaScript [<a href="http://www.w3.org/community/webed/wiki/A_Short_History_of_JavaScript">http://www.w3.org/community/webed/wiki/A_Short_History_of_JavaScript</a>]</li>
+</ol>
